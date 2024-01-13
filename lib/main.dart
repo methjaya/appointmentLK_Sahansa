@@ -1,3 +1,5 @@
+import 'package:appointmentlksahansa/screens/homescreen.dart';
+import 'package:appointmentlksahansa/screens/openScreen.dart';
 import 'package:appointmentlksahansa/screens/welcomescreen.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +10,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: WelcomeSrn(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => WelcomeSrn(),
+        '/page1': (context) => OpenScreen(),
+        '/page2': (context) => WelcomeSrn(),
+        '/page3': (context) => HomeScreen(),
+        '/page4': (context) => WelcomeSrn(),
+      },
     );
   }
 }
