@@ -175,13 +175,59 @@ class OpenScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 15),
                 Text(
-                  "Reserve Date",
+                  "Reserve Date : ",
                   style: TextStyle(
                     fontSize: 18,
                     color: blackColor,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
+
+                //new things
+                Container(
+                    height: 70,
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 6,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 5),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 25),
+                                decoration: BoxDecoration(
+                                    color: index == 1
+                                        ? prColor
+                                        : Color(0xFFF2F8FF),
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            Color.fromARGB(255, 31, 100, 169),
+                                        blurRadius: 4,
+                                        spreadRadius: 2,
+                                      )
+                                    ]),
+                                child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "${index + 8}",
+                                        style: TextStyle(
+                                          color: index == 1
+                                              ? whiteColor
+                                              : blackColor.withOpacity(0.6),
+                                        ),
+                                      )
+                                    ]),
+                              )
+                            ],
+                          );
+                        })),
               ],
             ),
           ),

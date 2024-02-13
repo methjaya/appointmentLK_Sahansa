@@ -14,9 +14,9 @@ class HomeScreen extends StatelessWidget {
 
   List<Image> categoryImages = [
     Image.asset("images/mying1.jpg", height: 30, width: 30),
-    Image.asset("images/mying1.jpg", height: 30, width: 30),
-    Image.asset("images/mying1.jpg", height: 30, width: 30),
-    Image.asset("images/mying1.jpg", height: 30, width: 30),
+    Image.asset("images/king.jpg", height: 30, width: 30),
+    Image.asset("images/sahansa.jpg", height: 30, width: 30),
+    Image.asset("images/jesus.jpg", height: 30, width: 30),
     Image.asset("images/mying1.jpg", height: 30, width: 30),
   ];
 
