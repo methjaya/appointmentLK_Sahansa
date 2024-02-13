@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 class TypeSection extends StatelessWidget {
   final List<String> imagePaths = [
     "images/mying1.jpg",
-    "images/mying1.jpg",
-    "images/mying1.jpg",
-    "images/mying1.jpg",
+    "images/sahansa.jpg",
+    "images/jesus.jpg",
+    "images/king.jpg",
     "images/mying1.jpg",
     "images/mying1.jpg",
   ];

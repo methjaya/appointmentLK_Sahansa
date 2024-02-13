@@ -302,7 +302,35 @@ class OpenScreen extends StatelessWidget {
                           );
                         })),
 
-                SizedBox(height: 10),
+                //SizedBox(height: 2),
+
+                Material(
+                  color: prColor,
+                  borderRadius: BorderRadius.circular(10),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/page2');
+                    },
+                    child: Container(
+                      height: 50,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        color: blueColor, // Background color matching prColor
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Book Appointment",
+                          style: TextStyle(
+                            color: whiteColor, // Text color set to white
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
