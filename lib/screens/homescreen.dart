@@ -1,3 +1,4 @@
+import 'package:appointmentlksahansa/screens/NotificationScreen.dart';
 import 'package:appointmentlksahansa/widgets/typesection.dart';
 import 'package:flutter/material.dart';
 import 'package:appointmentlksahansa/screens/NICScreen.dart';
@@ -56,6 +57,7 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      //
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -76,13 +78,26 @@ class HomeScreen extends StatelessWidget {
                               backgroundImage: AssetImage("images/mying1.jpg"),
                             ),
                           ),
-                          Icon(
-                            Icons.notifications_outlined,
-                            color: Colors.white,
-                            size: 60,
+                          GestureDetector(
+                            onTap: () {
+                              // Handle notification icon click and navigate to the notification screen
+                              // You can replace the code below with the actual navigation logic
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        NotificationScreen()), // Replace NotificationScreen() with your actual notification screen
+                              );
+                            },
+                            child: Icon(
+                              Icons.notifications_outlined,
+                              color: Colors.white,
+                              size: 60,
+                            ),
                           ),
                         ],
                       ),
+                      //
                       SizedBox(height: 15),
                       Text(
                         "Hi, Sahansa",

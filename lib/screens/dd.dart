@@ -21,18 +21,26 @@ class HomeScreen2 extends StatelessWidget {
       appBar: AppBar(
         title: Text('Appointment Booking'),
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AppointmentScreen()),
-            );
-          },
-          child: Text(
-            'Book Appointment',
-            style: TextStyle(
-              color: Color.fromARGB(255, 31, 100, 169),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/look.jpg"'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AppointmentScreen()),
+              );
+            },
+            child: Text(
+              'Book Appointment',
+              style: TextStyle(
+                color: Color.fromARGB(255, 31, 100, 169),
+              ),
             ),
           ),
         ),
