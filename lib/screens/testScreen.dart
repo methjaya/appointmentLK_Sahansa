@@ -9,7 +9,7 @@ class HomeScreen extends StatelessWidget {
     "Passport",
     "License",
     "Pension",
-    "Medical",
+    //  "Medical",
   ];
 
   List<Image> categoryImages = [
@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
     Image.asset("images/mying1.jpg", height: 30, width: 30),
     Image.asset("images/mying1.jpg", height: 30, width: 30),
     Image.asset("images/mying1.jpg", height: 30, width: 30),
-    Image.asset("images/mying1.jpg", height: 30, width: 30),
+    // Image.asset("images/mying1.jpg", height: 30, width: 30),
   ];
 
   @override

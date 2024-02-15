@@ -1,76 +1,66 @@
-import 'package:appointmentlksahansa/colors.dart';
-import 'package:appointmentlksahansa/screens/homescreen.dart';
 import 'package:flutter/material.dart';
+import 'package:appointmentlksahansa/screens/homescreen.dart';
 
 class WelcomeSrn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-          colors: [
-            prColor.withOpacity(0.8),
-            prColor,
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        )),
-        child: Column(children: [
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: Image.asset("images/call.png"),
-          ),
-          SizedBox(height: 70),
-          Text(
-            "Appointment Lanka by Sahansa",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 35,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
-              wordSpacing: 2,
+    return Scaffold(
+      backgroundColor: Colors.blueGrey[900],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: Image.asset("images/call.png"),
             ),
-          ),
-          SizedBox(height: 20),
-          Text(
-            "Making Government Services Easier",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
+            SizedBox(height: 20),
+            Text(
+              "Appointment Lanka by Sahansa",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
             ),
-          ),
-          SizedBox(height: 100),
-          Material(
-            color: whiteColor,
-            borderRadius: BorderRadius.circular(10),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
+            SizedBox(height: 10),
+            Text(
+              "Making Government Services Easier",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 50),
+            Material(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => HomeScreen(),
-                    ));
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
-                child: Text(
-                  "Get Started",
-                  style: TextStyle(
-                    color: blackColor,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                  child: Text(
+                    "Get Started",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 60),
-        ]),
+          ],
+        ),
       ),
     );
   }

@@ -7,8 +7,8 @@ class TypeSection extends StatelessWidget {
     "images/sahansa.jpg",
     "images/jesus.jpg",
     "images/king.jpg",
-    "images/mying1.jpg",
-    "images/mying1.jpg",
+    // "images/mying1.jpg",
+    //  "images/mying1.jpg",
   ];
 
   final List<String> cardTexts = [
@@ -16,8 +16,8 @@ class TypeSection extends StatelessWidget {
     "Passport",
     "License",
     "Pension",
-    "Medical",
-    "Other",
+    // "Medical",
+    //  "Other",
   ];
 
   @override
@@ -60,7 +60,7 @@ class TypeSection extends StatelessWidget {
                                 Navigator.pushNamed(context, '/page1');
                                 break;
                               case 1:
-                                Navigator.pushNamed(context, '/page2');
+                                Navigator.pushNamed(context, '/page5');
                                 break;
                               case 2:
                                 Navigator.pushNamed(context, '/page3');

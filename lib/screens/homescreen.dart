@@ -1,7 +1,9 @@
-import 'package:appointmentlksahansa/colors.dart';
 import 'package:appointmentlksahansa/widgets/typesection.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:appointmentlksahansa/screens/NICScreen.dart';
+import 'package:appointmentlksahansa/screens/PassportScreen.dart';
+import 'package:appointmentlksahansa/screens/LicenseScreen.dart';
+import 'package:appointmentlksahansa/screens/PensionScreen.dart';
 
 class HomeScreen extends StatelessWidget {
   List<String> categoryNames = [
@@ -9,21 +11,19 @@ class HomeScreen extends StatelessWidget {
     "Passport",
     "License",
     "Pension",
-    "Medical",
   ];
 
   List<Image> categoryImages = [
     Image.asset("images/mying1.jpg", height: 30, width: 30),
-    Image.asset("images/king.jpg", height: 30, width: 30),
     Image.asset("images/sahansa.jpg", height: 30, width: 30),
     Image.asset("images/jesus.jpg", height: 30, width: 30),
-    Image.asset("images/mying1.jpg", height: 30, width: 30),
+    Image.asset("images/king.jpg", height: 30, width: 30),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Color.fromARGB(255, 216, 216, 216),
+      color: Colors.white,
       child: Stack(
         children: [
           Container(
@@ -32,8 +32,8 @@ class HomeScreen extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  prColor,
-                  Color.fromARGB(255, 46, 124, 208),
+                  Color(0xFF00A8E8),
+                  Color(0xFF01579B),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -46,7 +46,8 @@ class HomeScreen extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.only(
-                top: MediaQuery.of(context).size.width / 1.5 - 200),
+              top: MediaQuery.of(context).size.width / 1.5 - 200,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -58,9 +59,22 @@ class HomeScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          CircleAvatar(
-                            radius: 30,
-                            backgroundImage: AssetImage("images/mying1.jpg"),
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color.fromARGB(255, 20, 62, 161)
+                                      .withOpacity(0.8),
+                                  blurRadius: 8,
+                                  spreadRadius: 1,
+                                ),
+                              ],
+                            ),
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundImage: AssetImage("images/mying1.jpg"),
+                            ),
                           ),
                           Icon(
                             Icons.notifications_outlined,
@@ -126,7 +140,7 @@ class HomeScreen extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(left: 15),
                   child: Text(
-                    "Types",
+                    "Instructions",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -142,54 +156,87 @@ class HomeScreen extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: categoryNames.length,
                     itemBuilder: (context, index) {
-                      return Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 15),
-                            height: 60,
-                            width: 60,
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(0, 255, 255, 255),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.4),
-                                  blurRadius: 4,
-                                  spreadRadius: 2,
-                                ),
-                              ],
+                      return GestureDetector(
+                        onTap: () {
+                          // Handle item click and navigate to the corresponding screen
+                          switch (index) {
+                            case 0:
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => NICScreen()),
+                              );
+                              break;
+                            case 1:
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PassportScreen()),
+                              );
+                              break;
+                            case 2:
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LicenseScreen()),
+                              );
+                              break;
+                            case 3:
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PensionScreen()),
+                              );
+                              break;
+                          }
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 15),
+                              height: 60,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(0, 255, 255, 255),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.4),
+                                    blurRadius: 4,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
+                              child: ClipOval(
+                                child: categoryImages[index],
+                              ),
                             ),
-                            child: ClipOval(
-                              child: categoryImages[index],
+                            SizedBox(height: 10),
+                            Text(
+                              categoryNames[index],
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black.withOpacity(0.7),
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            categoryNames[index],
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black.withOpacity(0.7),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       );
                     },
                   ),
                 ),
-
                 SizedBox(height: 20),
                 Padding(
                   padding: EdgeInsets.only(left: 15),
-                  child: Text("Current Slots",
+                  child: Text("Make Appointment",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                         color: Colors.black26.withOpacity(0.7),
                       )),
                 ),
-                // Assuming TypeSection is implemented
                 TypeSection(),
               ],
             ),
