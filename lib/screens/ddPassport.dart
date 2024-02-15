@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,41 +10,66 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'APPOITMENTLK_SAHANSA',
-      home: HomeScreen2(),
+      home: ddPassport(),
     );
   }
 }
 
-class HomeScreen2 extends StatelessWidget {
+class ddPassport extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Appointment Booking'),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('images/look.jpg"'),
-            fit: BoxFit.cover,
-          ),
+        title: Text(
+          'Appointment for Passport',
+          style: TextStyle(color: Colors.white),
         ),
-        child: Center(
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AppointmentScreen()),
-              );
-            },
-            child: Text(
-              'Book Appointment',
-              style: TextStyle(
-                color: Color.fromARGB(255, 31, 100, 169),
-              ),
+        backgroundColor: Color.fromARGB(255, 15, 110, 183),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('images/sahansa.jpg'),
+                      fit: BoxFit.cover,
+                    ),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.5),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AppointmentScreen(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Book Appointment',
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 31, 100, 169),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -58,7 +84,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
 
-  // Example: Reserved time slots
   List<String> reservedTimeSlots = [
     '10:00 AM',
     '01:30 PM',
@@ -88,7 +113,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Select Date and Time'),
+        title: Text(
+          'Select Date and Time',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.blue, // Set the background color to blue
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Column(
         children: [
@@ -144,8 +174,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       decoration: BoxDecoration(
                         color: reservedTimeSlots
                                 .contains(availableTimeSlots[index])
-                            ? Colors.grey
-                                .withOpacity(0.5) // Reserved slots color
+                            ? Colors.grey.withOpacity(0.5)
                             : Color.fromARGB(255, 101, 145, 217),
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -155,7 +184,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                           style: TextStyle(
                             color: reservedTimeSlots
                                     .contains(availableTimeSlots[index])
-                                ? Colors.black // Reserved slots text color
+                                ? Colors.black
                                 : Colors.white,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -169,17 +198,15 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: ElevatedButton(
-              onPressed: () {
-                // Handle button click
-              },
-              child: Text(
-                'Book Appointment',
-                style: TextStyle(
-                  color: Color.fromARGB(255, 31, 100, 169),
-                ),
+          SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              // Handle button click
+            },
+            child: Text(
+              'Book Appointment',
+              style: TextStyle(
+                color: Color.fromARGB(255, 31, 100, 169),
               ),
             ),
           ),
@@ -189,15 +216,39 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    DateTime? pickedDate;
+
+    await showCupertinoModalPopup(
       context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2025),
+      builder: (BuildContext context) {
+        return Container(
+          height: 200.0,
+          color: Colors.white,
+          child: CupertinoTheme(
+            data: CupertinoThemeData(
+              brightness: Brightness.light,
+              primaryColor: Colors.blue, // Set the primary color to blue
+              textTheme: CupertinoTextThemeData(
+                pickerTextStyle: TextStyle(
+                  color: Colors.black, // Set the text color to black
+                ),
+              ),
+            ),
+            child: CupertinoDatePicker(
+              mode: CupertinoDatePickerMode.date,
+              initialDateTime: selectedDate,
+              onDateTimeChanged: (DateTime newDate) {
+                pickedDate = newDate;
+              },
+            ),
+          ),
+        );
+      },
     );
-    if (picked != null && picked != selectedDate) {
+
+    if (pickedDate != null && pickedDate != selectedDate) {
       setState(() {
-        selectedDate = picked;
+        selectedDate = pickedDate!;
       });
     }
   }
@@ -205,7 +256,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   void _selectTime(int index) {
     if (!reservedTimeSlots.contains(availableTimeSlots[index])) {
       setState(() {
-        // Update the selected time
         selectedTime = TimeOfDay(
           hour: int.parse(availableTimeSlots[index].split(':')[0]),
           minute:

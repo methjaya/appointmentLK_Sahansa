@@ -57,7 +57,7 @@ class TypeSection extends StatelessWidget {
                             // Navigate to a different page based on the index
                             switch (index) {
                               case 0:
-                                Navigator.pushNamed(context, '/page1');
+                                Navigator.pushNamed(context, '/page6');
                                 break;
                               case 1:
                                 Navigator.pushNamed(context, '/page5');
