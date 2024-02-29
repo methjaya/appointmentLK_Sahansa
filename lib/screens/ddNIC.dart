@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'APPOITMENTLK_SAHANSA',
+      title: 'APPOINTMENT_APP',
       home: ddNIC(),
     );
   }
@@ -114,7 +114,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Select Date and Time'),
-        backgroundColor: Colors.blue, // Set the background color to blue
+        backgroundColor: Colors.blue,
       ),
       body: Column(
         children: [
@@ -225,10 +225,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           child: CupertinoTheme(
             data: CupertinoThemeData(
               brightness: Brightness.light,
-              primaryColor: Colors.blue, // Set the primary color to blue
+              primaryColor: Colors.blue,
               textTheme: CupertinoTextThemeData(
                 pickerTextStyle: TextStyle(
-                  color: Colors.black, // Set the text color to black
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -275,7 +275,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Appointment Completed',
+            'Selection Completed',
             style: TextStyle(color: Colors.blue),
           ),
           content: Column(
@@ -300,6 +300,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   color: const Color.fromARGB(255, 0, 0, 0),
                 ),
               ),
+              SizedBox(height: 20),
+              Text(
+                'Click Continue to Fill Out Your Details:',
+                style: TextStyle(color: const Color.fromARGB(255, 81, 81, 81)),
+              ),
+              SizedBox(height: 10),
             ],
           ),
           actions: [
@@ -308,7 +314,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
-                primary: const Color.fromARGB(255, 116, 116, 116),
+                backgroundColor: const Color.fromARGB(255, 116, 116, 116),
               ),
               child: Text(
                 'Cancel',
@@ -317,13 +323,18 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ApplicationFormScreen(),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.blue,
+                backgroundColor: Colors.blue,
               ),
               child: Text(
-                'OK',
+                'Continue',
                 style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
               ),
             ),
@@ -331,5 +342,324 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         );
       },
     );
+  }
+}
+
+class ApplicationFormScreen extends StatefulWidget {
+  @override
+  _ApplicationFormScreenState createState() => _ApplicationFormScreenState();
+}
+
+void _showSubmitConfirmation(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          'Submission Successful',
+          style: TextStyle(color: Colors.blue),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.check_circle,
+              color: Colors.green,
+              size: 40,
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Your form submission was successful.',
+              style: TextStyle(color: const Color.fromARGB(255, 81, 81, 81)),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Booking ID: 45623', // Replace with the actual booking ID
+              style: TextStyle(
+                fontSize: 16,
+                color: const Color.fromARGB(255, 81, 81, 81),
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Click Continue to fill out your details:',
+              style: TextStyle(color: const Color.fromARGB(255, 81, 81, 81)),
+            ),
+            SizedBox(height: 10),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context); // Close both popups
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 116, 116, 116),
+            ),
+            child: Text(
+              'OK',
+              style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Any additional action needed on Continue
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+            ),
+            child: Text(
+              'Continue',
+              style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
+  DateTime selectedDate = DateTime.now();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Application Form'),
+        backgroundColor: Colors.blue,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              buildTextField(label: 'First Name', index: 1, icon: Icons.person),
+              SizedBox(height: 16),
+              buildTextField(label: 'Last Name', index: 2, icon: Icons.person),
+              SizedBox(height: 16),
+              buildTextField(
+                  label: 'NIC Number', index: 3, icon: Icons.credit_card),
+              SizedBox(height: 16),
+              buildDateField(
+                  label: 'Date of Birth', index: 4, icon: Icons.calendar_today),
+              SizedBox(height: 16),
+              buildTextField(
+                  label: 'Province',
+                  index: 5,
+                  icon: Icons.location_city,
+                  isDropdown: true),
+              SizedBox(height: 16),
+              buildTextField(
+                  label: 'District',
+                  index: 6,
+                  icon: Icons.location_city,
+                  isDropdown: true),
+              SizedBox(height: 16),
+              buildTextField(
+                  label: 'Contact Number', index: 7, icon: Icons.phone),
+              SizedBox(height: 16),
+              buildTextField(label: 'Email', index: 8, icon: Icons.email),
+              // Add more fields as needed
+              SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  _showSubmitConfirmation(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor:
+                      Color.fromARGB(255, 15, 110, 183), // Text color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Text('Submit'),
+              ),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context); // Go back to the previous screen
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor:
+                      Color.fromARGB(255, 31, 100, 169), // Text color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Text('Cancel'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildTextField(
+      {required String label,
+      required int index,
+      required IconData icon,
+      bool isDropdown = false}) {
+    return isDropdown
+        ? buildDropdownField(label: label, index: index, icon: icon)
+        : TextFormField(
+            decoration: InputDecoration(
+              labelText: label,
+              hintText: 'Enter $label',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              prefixIcon: Icon(icon),
+            ),
+            textInputAction: TextInputAction.next,
+            keyboardType: TextInputType.text,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return '$label is required';
+              }
+              return null;
+            },
+          );
+  }
+
+  Widget buildDropdownField(
+      {required String label, required int index, required IconData icon}) {
+    List<String> items = label == 'Province'
+        ? [
+            'Central',
+            'Eastern',
+            'North Central',
+            'Northern',
+            'North Western',
+            'Sabaragamuwa',
+            'Southern',
+            'Uva',
+            'Western'
+          ]
+        : [
+            'Ampara',
+            'Anuradhapura',
+            'Badulla',
+            'Batticaloa',
+            'Colombo',
+            'Galle',
+            'Gampaha',
+            'Hambantota',
+            'Jaffna',
+            'Kalutara',
+            'Kandy',
+            'Kegalle',
+            'Kilinochchi',
+            'Kurunegala',
+            'Mannar',
+            'Matale',
+            'Matara',
+            'Monaragala',
+            'Mullaitivu',
+            'Nuwara Eliya',
+            'Polonnaruwa',
+            'Puttalam',
+            'Ratnapura',
+            'Trincomalee'
+          ];
+
+    String? selectedValue;
+
+    return DropdownButtonFormField<String>(
+      items: items.map((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        setState(() {
+          selectedValue = value;
+        });
+      },
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: 'Select $label',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        prefixIcon: Icon(icon),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return '$label is required';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget buildDateField(
+      {required String label, required int index, required IconData icon}) {
+    return InkWell(
+      onTap: () => _selectDate(context),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: 'Select $label',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          prefixIcon: Icon(icon),
+        ),
+        child: Text(
+          _formatDate(selectedDate),
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? pickedDate = selectedDate;
+
+    await showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200.0,
+          color: Colors.white,
+          child: CupertinoTheme(
+            data: CupertinoThemeData(
+              brightness: Brightness.light,
+              primaryColor: Colors.blue,
+              textTheme: CupertinoTextThemeData(
+                pickerTextStyle: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            child: CupertinoDatePicker(
+              mode: CupertinoDatePickerMode.date,
+              initialDateTime: selectedDate,
+              onDateTimeChanged: (DateTime newDate) {
+                pickedDate = newDate;
+              },
+            ),
+          ),
+        );
+      },
+    );
+
+    if (pickedDate != null && pickedDate != selectedDate) {
+      setState(() {
+        selectedDate = pickedDate!;
+      });
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
   }
 }

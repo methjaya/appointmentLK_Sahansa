@@ -65,11 +65,11 @@ class NICScreen extends StatelessWidget {
                   // Add functionality here
                 },
                 style: ElevatedButton.styleFrom(
-                  primary:
+                  backgroundColor:
                       Color.fromARGB(255, 31, 100, 169), // Set button color
                 ),
                 child: Text(
-                  'What Should You Bring ?',
+                  'What Should You Bring ??',
                   style: TextStyle(color: Colors.white), // Set text color
                 ),
               ),

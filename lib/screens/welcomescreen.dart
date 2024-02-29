@@ -78,7 +78,7 @@ class WelcomeSrn extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      primary:
+                      backgroundColor:
                           Color(0xFF263238), // Dark Grey Color(0xFF263238),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),

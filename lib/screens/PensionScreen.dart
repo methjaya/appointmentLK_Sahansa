@@ -65,7 +65,7 @@ class PensionScreen extends StatelessWidget {
                   // Add functionality here
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(255, 31, 100, 169),
+                  backgroundColor: Color.fromARGB(255, 31, 100, 169),
                 ),
                 child: Text(
                   'What Should You Bring ?',

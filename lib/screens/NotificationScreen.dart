@@ -157,7 +157,7 @@ class UndoButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onUndo,
       style: ElevatedButton.styleFrom(
-        primary: Colors.grey,
+        backgroundColor: Colors.grey,
       ),
       child: Text(
         'Undo',

@@ -113,12 +113,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Select Date and Time',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: Text('Select Date and Time'),
         backgroundColor: Colors.blue, // Set the background color to blue
-        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Column(
         children: [
@@ -198,15 +194,17 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               ),
             ),
           ),
-          SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {
-              // Handle button click
-            },
-            child: Text(
-              'Book Appointment',
-              style: TextStyle(
-                color: Color.fromARGB(255, 31, 100, 169),
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: ElevatedButton(
+              onPressed: () {
+                _showAppointmentConfirmation(context);
+              },
+              child: Text(
+                'Book Appointment',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 31, 100, 169),
+                ),
               ),
             ),
           ),
@@ -269,5 +267,69 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     final formattedDate = "${date.day}/${date.month}/${date.year}";
     final formattedTime = "${time.format(context)}";
     return "$formattedDate $formattedTime";
+  }
+
+  void _showAppointmentConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Appointment Completed',
+            style: TextStyle(color: Colors.blue),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 40,
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Your appointment is completed for:',
+                style: TextStyle(color: const Color.fromARGB(255, 81, 81, 81)),
+              ),
+              SizedBox(height: 10),
+              Text(
+                _formatDateTime(selectedDate, selectedTime),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 116, 116, 116),
+              ),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+              ),
+              child: Text(
+                'OK',
+                style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
