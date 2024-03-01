@@ -1,3 +1,5 @@
+import 'package:appointmentlksahansa/screens/ItemsScreen.dart';
+import 'package:appointmentlksahansa/screens/ItemsScreen2.dart';
 import 'package:appointmentlksahansa/screens/ddNIC.dart';
 import 'package:appointmentlksahansa/screens/ddPassport.dart';
 import 'package:appointmentlksahansa/screens/homescreen.dart';
@@ -21,6 +23,8 @@ class MyApp extends StatelessWidget {
         '/page4': (context) => WelcomeSrn(),
         '/page5': (context) => ddPassport(),
         '/page6': (context) => ddNIC(),
+        '/page7': (context) => ItemsScreen(),
+        '/page8': (context) => ItemsScreen2(),
       },
     );
   }

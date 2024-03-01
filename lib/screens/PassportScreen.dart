@@ -62,7 +62,7 @@ class PassportScreen extends StatelessWidget {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Add functionality here
+                  Navigator.pushNamed(context, '/page8');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromARGB(255, 31, 100, 169),
