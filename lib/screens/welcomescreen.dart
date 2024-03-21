@@ -1,3 +1,4 @@
+import 'package:appointmentlksahansa/screens/SelectionScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:appointmentlksahansa/screens/homescreen.dart';
 
@@ -73,7 +74,8 @@ class WelcomeSrn extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
+                          builder: (context) =>
+                              SelectionScreen(), // HomeScreen() here I have to change the homescreen to the selection screen
                         ),
                       );
                     },

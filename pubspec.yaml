@@ -20,6 +20,7 @@ version: 1.0.0+1
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
+  
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -30,14 +31,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  #dropdown_search: ^latest_version
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   material_design_icons_flutter: 7.0.7296
-  dropdown_search: ^4.1.0
-  dropdown_formfield: ^0.1.2
+ # dropdown_search: ^4.1.0
+ #dropdown_formfield: ^0.1.2
 
 
 
@@ -73,7 +75,9 @@ flutter:
     - images/sahansa.jpg
     - images/jesus.jpg
     - images/sl.jpeg
-    - images/look.jpg    
+    - images/look.jpg  
+    - images/select1.jpeg  
+    - images/select2.jpg    
  #    - images/a_dot_ham.jpeg
 
 
