@@ -1,11 +1,13 @@
 import 'package:appointmentlksahansa/screens/ItemsScreen.dart';
 import 'package:appointmentlksahansa/screens/ItemsScreen2.dart';
 import 'package:appointmentlksahansa/screens/SelectionScreen.dart';
+
 import 'package:appointmentlksahansa/screens/ddNIC.dart';
 import 'package:appointmentlksahansa/screens/ddPassport.dart';
 import 'package:appointmentlksahansa/screens/homescreen.dart';
 import 'package:appointmentlksahansa/screens/homescreenAdmin.dart';
 import 'package:appointmentlksahansa/screens/homescreenOfficer.dart';
+import 'package:appointmentlksahansa/screens/loginscreen.dart';
 import 'package:appointmentlksahansa/screens/openScreen.dart';
 import 'package:appointmentlksahansa/screens/welcomescreen.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +33,7 @@ class MyApp extends StatelessWidget {
         '/page9': (context) => SelectionScreen(),
         '/page10': (context) => HomeScreenOfficer(),
         '/page11': (context) => HomeScreenAdmin1(),
+        '/page12': (context) => LoginPage(),
       },
     );
   }

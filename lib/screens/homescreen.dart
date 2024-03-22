@@ -1,4 +1,7 @@
 import 'package:appointmentlksahansa/screens/NotificationScreen.dart';
+import 'package:appointmentlksahansa/screens/ProfileScreen.dart';
+import 'package:appointmentlksahansa/screens/SignUpScreen.dart';
+import 'package:appointmentlksahansa/screens/loginscreen.dart';
 import 'package:appointmentlksahansa/widgets/typesection.dart';
 import 'package:flutter/material.dart';
 import 'package:appointmentlksahansa/screens/NICScreen.dart';
@@ -74,11 +77,22 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              child: CircleAvatar(
-                                radius: 30,
-                                backgroundImage:
-                                    AssetImage("images/mying1.jpg"),
-                              ),
+                              child: Container(
+                                  child: GestureDetector(
+                                onTap: () {
+                                  // Assuming you're within a StatelessWidget or StatefulWidget and have a BuildContext
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) => ProfilePage()),
+                                    //LoginPage()), // Make sure LoginPage is defined in your app
+                                  );
+                                },
+                                child: CircleAvatar(
+                                  radius: 30,
+                                  backgroundImage:
+                                      AssetImage("images/mying1.jpg"),
+                                ),
+                              )),
                             ),
                             GestureDetector(
                               onTap: () {
