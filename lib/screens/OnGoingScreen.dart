@@ -22,24 +22,6 @@ class OngoingScreen extends StatefulWidget {
 }
 
 class _OngoingScreenState extends State<OngoingScreen> {
-  /*List<Map<String, String>> appointments = [
-    {
-      'time': '09:00 AM',
-      'date': '2024-04-15',
-      'description': 'Appointment NIC'
-    },
-    {
-      'time': '11:00 AM',
-      'date': '2024-04-15',
-      'description': 'Appointment PASSPORT'
-    },
-    {
-      'time': '02:00 PM',
-      'date': '2024-04-16',
-      'description': 'Appointment LICENSE' 
-    },
-  ];
-*/
   late Future<List<Map<String, dynamic>>> dataFuture;
 
   @override
@@ -49,6 +31,14 @@ class _OngoingScreenState extends State<OngoingScreen> {
   }
 
   Future<List<Map<String, dynamic>>> fetchAllData() async {
+    var currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      throw FirebaseAuthException(
+        code: 'ERROR_NO_USER',
+        message: 'No user logged in',
+      );
+    }
+
     List<String> collections = [
       'LicenseFormData',
       'PensionFormData',
@@ -59,7 +49,7 @@ class _OngoingScreenState extends State<OngoingScreen> {
     List<Future<QuerySnapshot>> futures = collections.map((collection) {
       return FirebaseFirestore.instance
           .collection(collection)
-          .where('userid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where('userid', isEqualTo: currentUser.uid)
           .get();
     }).toList();
 
@@ -68,21 +58,17 @@ class _OngoingScreenState extends State<OngoingScreen> {
     for (var snapshot in snapshots) {
       for (var doc in snapshot.docs) {
         var docData = doc.data() as Map<String, dynamic>;
-        // Extract only the necessary fields
         data.add({
-          'selectedDate': docData['selectedDate'],
-          'selectedTime': docData['selectedTime'],
-          'title': docData['title'],
+          'selectedDate': docData['selectedDate'] ?? 'No date',
+          'selectedTime': docData['selectedTime'] ?? 'No time',
+          'title': docData['title'] ?? 'No title',
+          'location': docData['location'] ?? 'No location'
         });
       }
     }
 
-    print(data);
     return data;
   }
-
-  Map<String, String>? lastRemovedAppointment;
-  int? lastRemovedIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +81,6 @@ class _OngoingScreenState extends State<OngoingScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background image with gradient
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -109,49 +94,50 @@ class _OngoingScreenState extends State<OngoingScreen> {
               ),
             ),
           ),
-          // FutureBuilder for dynamic data fetching
           Center(
             child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: fetchAllData(),
+              future: dataFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();
                 } else if (snapshot.hasError) {
                   return Text("Error: ${snapshot.error}");
-                } else if (snapshot.hasData) {
-                  return SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: snapshot.data!
-                          .map((appointment) => Container(
-                                key: ValueKey(appointment['description']),
-                                width: MediaQuery.of(context).size.width *
-                                    0.8, // 80% of screen width
-                                child: Card(
-                                  color: Colors.white.withOpacity(0.85),
-                                  margin: EdgeInsets.all(10),
-                                  child: ListTile(
-                                    title: Text(appointment['description'],
-                                        style: TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 15, 110, 183))),
-                                    subtitle: Text(
-                                        '${appointment['date']} at ${appointment['time']}'),
-                                    leading: Icon(Icons.event_available,
-                                        color:
-                                            Color.fromARGB(255, 15, 110, 183)),
-                                    trailing: IconButton(
-                                      icon:
-                                          Icon(Icons.cancel, color: Colors.red),
-                                      onPressed: () {
-                                        // Implementation for canceling the appointment
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ))
-                          .toList(),
-                    ),
+                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: snapshot.data!.asMap().entries.map((entry) {
+                      int idx =
+                          entry.key + 1; // Appointment number starting from 1
+                      Map<String, dynamic> appointment = entry.value;
+                      return Container(
+                        width: MediaQuery.of(context).size.width *
+                            0.8, // 80% of screen width
+                        margin: EdgeInsets.only(top: 10, bottom: 10),
+                        child: Card(
+                          color: Colors.white.withOpacity(0.85),
+                          child: ListTile(
+                            title: Text(appointment['title'],
+                                style: TextStyle(
+                                    color: Color.fromARGB(255, 15, 110, 183))),
+                            subtitle: Text(
+                                '${appointment['selectedDate']} at ${appointment['selectedTime']}\nLocation: ${appointment['location']}'),
+                            leading: Icon(Icons.event_available,
+                                color: Color.fromARGB(255, 15, 110, 183)),
+                            trailing: Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                shape: BoxShape.circle,
+                              ),
+                              alignment: Alignment.center,
+                              child: Text('$idx',
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   );
                 } else {
                   return Text("No appointments found");
@@ -163,59 +149,4 @@ class _OngoingScreenState extends State<OngoingScreen> {
       ),
     );
   }
-
-  void _showCancelConfirmation(
-      BuildContext context, Map<String, String> appointment) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Cancel Appointment',
-              style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
-          content: Text('Are you sure you want to cancel this appointment?',
-              style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
-          actions: <Widget>[
-            TextButton(
-              child: Text('No',
-                  style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: Text('Yes',
-                  style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
-              onPressed: () {
-                Navigator.of(context).pop();
-                // _removeAppointment(appointment);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-/*
-  void _removeAppointment(Map<String, String> appointment) {
-    setState(() {
-      lastRemovedIndex = appointments.indexOf(appointment);
-      lastRemovedAppointment = appointment;
-      appointments.remove(appointment);
-      ScaffoldMessenger.of(context)
-        ..removeCurrentSnackBar()
-        ..showSnackBar(SnackBar(
-          content: Text('Appointment cancelled'),
-          action: SnackBarAction(
-            label: 'UNDO',
-            onPressed: () => _undoRemoval(),
-          ),
-        ));
-    });
-  }
-
-  void _undoRemoval() {
-    if (lastRemovedAppointment != null && lastRemovedIndex != null) {
-      setState(() {
-        appointments.insert(lastRemovedIndex!, lastRemovedAppointment!);
-      });
-    }
-  }*/
 }
