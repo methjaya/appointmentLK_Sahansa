@@ -300,70 +300,124 @@ class MakeAppointmentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
-    int crossAxisCount = screenSize.width > 600 ? 4 : 2;
+    // Use MediaQuery to determine the screen size
+    double screenWidth = MediaQuery.of(context).size.width;
+    double cardSize;
+
+    // Adjust card size based on screen width
+    if (screenWidth > 800) {
+      // Assuming 800px as a breakpoint for larger screens
+      cardSize = screenWidth * 0.25; // Smaller card size for larger screens
+    } else {
+      cardSize = screenWidth * 0.4; // Standard mobile size
+    }
+
+    double maxWidth = screenWidth * 0.8; // Maximum width for the container
+    final ScrollController scrollController = ScrollController();
 
     return Expanded(
-      child: GridView.builder(
-        padding: const EdgeInsets.all(16.0),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 3 / 1,
-        ),
-        itemCount: filteredServices.length,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => filteredServices[index]['screen']),
-              );
-            },
-            child: Card(
-              color: Colors.white70,
-              child: Center(
-                // Centers the contents vertically and horizontally
-                child: Column(
-                  mainAxisSize: MainAxisSize
-                      .min, // Use the minimum space that the children need
-                  mainAxisAlignment:
-                      MainAxisAlignment.center, // Center vertically
-                  children: [
-                    Icon(
-                      filteredServices[index]['icon'],
-                      color: Colors.blue[800],
-                      size: 20,
-                    ),
-                    SizedBox(height: 8), // Space between icon and text
-                    Text(
-                      filteredServices[index]['name'],
-                      style: TextStyle(
-                        color: Colors.blue[800],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
+      child: Center(
+        child: Container(
+          constraints: BoxConstraints(maxWidth: maxWidth),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                onPressed: () {
+                  scrollController.animateTo(
+                    scrollController.offset - cardSize,
+                    curve: Curves.easeInOut,
+                    duration: Duration(milliseconds: 300),
+                  );
+                },
+              ),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: filteredServices.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
+                      width: cardSize,
+                      margin: EdgeInsets.symmetric(horizontal: 8),
+                      child: Card(
+                        clipBehavior: Clip.antiAlias,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            Ink.image(
+                              image:
+                                  AssetImage(filteredServices[index]['image']),
+                              fit: BoxFit.cover,
+                              height: double.infinity,
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              color: Colors.black.withOpacity(0.5),
+                              child: Text(
+                                filteredServices[index]['name'],
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      textAlign: TextAlign
-                          .center, // Ensures the text is centered horizontally
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
-            ),
-          );
-        },
+              IconButton(
+                icon: Icon(Icons.arrow_forward_ios, color: Colors.white),
+                onPressed: () {
+                  scrollController.animateTo(
+                    scrollController.offset + cardSize,
+                    curve: Curves.easeInOut,
+                    duration: Duration(milliseconds: 300),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
+// Update the `services` list to include image paths
 final List<Map<String, dynamic>> services = [
-  {'name': 'NIC', 'icon': Icons.credit_card, 'screen': NICScreen()},
-  {'name': 'Passport', 'icon': Icons.book, 'screen': PassportScreen()},
-  {'name': 'License', 'icon': Icons.car_rental, 'screen': LicenseScreen()},
-  {'name': 'Pension', 'icon': Icons.monetization_on, 'screen': PensionScreen()},
+  {
+    'name': 'NIC',
+    'icon': Icons.credit_card,
+    'screen': NICScreen(),
+    'image': 'assets/nic.jpg'
+  },
+  {
+    'name': 'Passport',
+    'icon': Icons.book,
+    'screen': PassportScreen(),
+    'image': 'assets/passport.png'
+  },
+  {
+    'name': 'License',
+    'icon': Icons.car_rental,
+    'screen': LicenseScreen(),
+    'image': 'assets/license.jpg'
+  },
+  {
+    'name': 'Pension',
+    'icon': Icons.monetization_on,
+    'screen': PensionScreen(),
+    'image': 'assets/pension.jpg'
+  },
 ];
 
 final List<Map<String, dynamic>> ongoingAppointments = [
