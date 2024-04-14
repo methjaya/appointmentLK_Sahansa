@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -20,7 +22,7 @@ class OngoingScreen extends StatefulWidget {
 }
 
 class _OngoingScreenState extends State<OngoingScreen> {
-  List<Map<String, String>> appointments = [
+  /*List<Map<String, String>> appointments = [
     {
       'time': '09:00 AM',
       'date': '2024-04-15',
@@ -34,9 +36,50 @@ class _OngoingScreenState extends State<OngoingScreen> {
     {
       'time': '02:00 PM',
       'date': '2024-04-16',
-      'description': 'Appointment LICENSE'
+      'description': 'Appointment LICENSE' 
     },
   ];
+*/
+  late Future<List<Map<String, dynamic>>> dataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    dataFuture = fetchAllData();
+  }
+
+  Future<List<Map<String, dynamic>>> fetchAllData() async {
+    List<String> collections = [
+      'LicenseFormData',
+      'PensionFormData',
+      'NICFormData',
+      'PassportFormData'
+    ];
+
+    List<Future<QuerySnapshot>> futures = collections.map((collection) {
+      return FirebaseFirestore.instance
+          .collection(collection)
+          .where('userid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get();
+    }).toList();
+
+    List<QuerySnapshot> snapshots = await Future.wait(futures);
+    List<Map<String, dynamic>> data = [];
+    for (var snapshot in snapshots) {
+      for (var doc in snapshot.docs) {
+        var docData = doc.data() as Map<String, dynamic>;
+        // Extract only the necessary fields
+        data.add({
+          'selectedDate': docData['selectedDate'],
+          'selectedTime': docData['selectedTime'],
+          'title': docData['title'],
+        });
+      }
+    }
+
+    print(data);
+    return data;
+  }
 
   Map<String, String>? lastRemovedAppointment;
   int? lastRemovedIndex;
@@ -66,38 +109,54 @@ class _OngoingScreenState extends State<OngoingScreen> {
               ),
             ),
           ),
-          // Centered cards with adjusted width
+          // FutureBuilder for dynamic data fetching
           Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: appointments
-                    .map((appointment) => Container(
-                          key: ValueKey(appointment),
-                          width: MediaQuery.of(context).size.width *
-                              0.8, // 80% of screen width
-                          child: Card(
-                            color: Colors.white.withOpacity(0.85),
-                            margin: EdgeInsets.all(10),
-                            child: ListTile(
-                              title: Text(appointment['description']!,
-                                  style: TextStyle(
-                                      color:
-                                          Color.fromARGB(255, 15, 110, 183))),
-                              subtitle: Text(
-                                  '${appointment['date']} at ${appointment['time']}'),
-                              leading: Icon(Icons.event_available,
-                                  color: Color.fromARGB(255, 15, 110, 183)),
-                              trailing: IconButton(
-                                icon: Icon(Icons.cancel, color: Colors.red),
-                                onPressed: () => _showCancelConfirmation(
-                                    context, appointment),
-                              ),
-                            ),
-                          ),
-                        ))
-                    .toList(),
-              ),
+            child: FutureBuilder<List<Map<String, dynamic>>>(
+              future: fetchAllData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text("Error: ${snapshot.error}");
+                } else if (snapshot.hasData) {
+                  return SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: snapshot.data!
+                          .map((appointment) => Container(
+                                key: ValueKey(appointment['description']),
+                                width: MediaQuery.of(context).size.width *
+                                    0.8, // 80% of screen width
+                                child: Card(
+                                  color: Colors.white.withOpacity(0.85),
+                                  margin: EdgeInsets.all(10),
+                                  child: ListTile(
+                                    title: Text(appointment['description'],
+                                        style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 15, 110, 183))),
+                                    subtitle: Text(
+                                        '${appointment['date']} at ${appointment['time']}'),
+                                    leading: Icon(Icons.event_available,
+                                        color:
+                                            Color.fromARGB(255, 15, 110, 183)),
+                                    trailing: IconButton(
+                                      icon:
+                                          Icon(Icons.cancel, color: Colors.red),
+                                      onPressed: () {
+                                        // Implementation for canceling the appointment
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ))
+                          .toList(),
+                    ),
+                  );
+                } else {
+                  return Text("No appointments found");
+                }
+              },
             ),
           ),
         ],
@@ -126,7 +185,7 @@ class _OngoingScreenState extends State<OngoingScreen> {
                   style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
               onPressed: () {
                 Navigator.of(context).pop();
-                _removeAppointment(appointment);
+                // _removeAppointment(appointment);
               },
             ),
           ],
@@ -134,7 +193,7 @@ class _OngoingScreenState extends State<OngoingScreen> {
       },
     );
   }
-
+/*
   void _removeAppointment(Map<String, String> appointment) {
     setState(() {
       lastRemovedIndex = appointments.indexOf(appointment);
@@ -158,5 +217,5 @@ class _OngoingScreenState extends State<OngoingScreen> {
         appointments.insert(lastRemovedIndex!, lastRemovedAppointment!);
       });
     }
-  }
+  }*/
 }
