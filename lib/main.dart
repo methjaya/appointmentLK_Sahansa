@@ -9,7 +9,9 @@ import 'package:responsivetutorial/screens/LicenseInstructions.dart';
 import 'package:responsivetutorial/screens/NICInstructions.dart';
 import 'package:responsivetutorial/screens/PassportInstructions.dart';
 import 'package:responsivetutorial/screens/PensionInstructions.dart';
+import 'package:responsivetutorial/screens/UserSelectionScreen.dart';
 import 'package:responsivetutorial/screens/loginScreen.dart';
+import 'package:responsivetutorial/screens/welcomescreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -159,7 +161,7 @@ class HeaderSection extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                    MaterialPageRoute(builder: (context) => WelcomeScreen()),
                   );
                   // Handle logout icon press here
                 },
