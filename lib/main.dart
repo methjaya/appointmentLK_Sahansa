@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:responsivetutorial/firebase_options.dart';
 
 import 'package:responsivetutorial/screens/LicenseScreen.dart';
 import 'package:responsivetutorial/screens/NICScreen.dart';
@@ -13,7 +16,10 @@ import 'package:responsivetutorial/screens/UserSelectionScreen.dart';
 import 'package:responsivetutorial/screens/loginScreen.dart';
 import 'package:responsivetutorial/screens/welcomescreen.dart';
 
-void main() {
+Future<void> main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
@@ -21,7 +27,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomeScreen(),
+      home: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return HomeScreen();
+            } else {
+              return const LoginScreen();
+            }
+          }),
     );
   }
 }
@@ -159,10 +173,11 @@ class HeaderSection extends StatelessWidget {
               child: IconButton(
                 icon: Icon(Icons.exit_to_app, color: Colors.white),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => WelcomeScreen()),
-                  );
+                  FirebaseAuth.instance.signOut();
+                  //Navigator.push(
+                  //  context,
+                  // MaterialPageRoute(builder: (context) => WelcomeScreen()),
+                  //);
                   // Handle logout icon press here
                 },
               ),
@@ -302,19 +317,10 @@ class MakeAppointmentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use MediaQuery to determine the screen size
     double screenWidth = MediaQuery.of(context).size.width;
-    double cardSize;
-
-    // Adjust card size based on screen width
-    if (screenWidth > 800) {
-      // Assuming 800px as a breakpoint for larger screens
-      cardSize = screenWidth * 0.25; // Smaller card size for larger screens
-    } else {
-      cardSize = screenWidth * 0.4; // Standard mobile size
-    }
-
-    double maxWidth = screenWidth * 0.8; // Maximum width for the container
+    double cardSize =
+        screenWidth > 800 ? screenWidth * 0.25 : screenWidth * 0.4;
+    double maxWidth = screenWidth * 0.8;
     final ScrollController scrollController = ScrollController();
 
     return Expanded(
@@ -340,36 +346,47 @@ class MakeAppointmentSection extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   itemCount: filteredServices.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                      width: cardSize,
-                      margin: EdgeInsets.symmetric(horizontal: 8),
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Stack(
-                          alignment: Alignment.bottomCenter,
-                          children: [
-                            Ink.image(
-                              image:
-                                  AssetImage(filteredServices[index]['image']),
-                              fit: BoxFit.cover,
-                              height: double.infinity,
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              color: Colors.black.withOpacity(0.5),
-                              child: Text(
-                                filteredServices[index]['name'],
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                filteredServices[index]['screen'],
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: cardSize,
+                        margin: EdgeInsets.symmetric(horizontal: 8),
+                        child: Card(
+                          clipBehavior: Clip.antiAlias,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Stack(
+                            alignment: Alignment.bottomCenter,
+                            children: [
+                              Ink.image(
+                                image: AssetImage(
+                                    filteredServices[index]['image']),
+                                fit: BoxFit.cover,
+                                height: double.infinity,
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                color: Colors.black.withOpacity(0.5),
+                                child: Text(
+                                  filteredServices[index]['name'],
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     );

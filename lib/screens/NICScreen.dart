@@ -1,21 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'APPOINTMENT_APP',
-      home: NICScreen(),
-    );
-  }
-}
-
 class NICScreen extends StatefulWidget {
+  const NICScreen({Key? key}) : super(key: key);
+
   @override
   _NICScreenState createState() => _NICScreenState();
 }
@@ -59,10 +49,10 @@ class _NICScreenState extends State<NICScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text('Appointment for NIC', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 15, 110, 183),
-        iconTheme: IconThemeData(color: Colors.white),
+        title: const Text('Appointment for NIC',
+            style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color.fromARGB(255, 15, 110, 183),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Stack(
         fit: StackFit.expand,
@@ -70,7 +60,7 @@ class _NICScreenState extends State<NICScreen> {
           // Background image
           Container(
             decoration: BoxDecoration(
-              image: DecorationImage(
+              image: const DecorationImage(
                 image: AssetImage('assets/nic.jpg'),
                 fit: BoxFit.cover,
               ),
@@ -104,25 +94,25 @@ class _NICScreenState extends State<NICScreen> {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value,
-                              style: TextStyle(color: Colors.white)),
+                              style: const TextStyle(color: Colors.white)),
                         );
                       }).toList(),
                       decoration: InputDecoration(
                         labelText: 'Select Your Nearest District',
-                        labelStyle: TextStyle(color: Colors.white),
+                        labelStyle: const TextStyle(color: Colors.white),
                         filled: true,
-                        fillColor: Color.fromARGB(255, 15, 110, 183),
+                        fillColor: const Color.fromARGB(255, 15, 110, 183),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
                         ),
                       ),
                       iconEnabledColor: Colors.white,
-                      dropdownColor: Color.fromARGB(255, 15, 110, 183),
-                      style: TextStyle(color: Colors.white),
+                      dropdownColor: const Color.fromARGB(255, 15, 110, 183),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   if (selectedDistrict != null)
                     ...[
                       '$selectedDistrict Sectarian\'s Office',
@@ -132,7 +122,7 @@ class _NICScreenState extends State<NICScreen> {
                           (location) => Container(
                             width:
                                 dropdownWidth, // Set the width to match the dropdown
-                            margin: EdgeInsets.symmetric(vertical: 8),
+                            margin: const EdgeInsets.symmetric(vertical: 8),
                             decoration: BoxDecoration(
                               color: Colors
                                   .white, // White background for location cards
@@ -142,14 +132,14 @@ class _NICScreenState extends State<NICScreen> {
                                   color: Colors.grey.withOpacity(0.5),
                                   spreadRadius: 2,
                                   blurRadius: 5,
-                                  offset: Offset(
+                                  offset: const Offset(
                                       0, 3), // changes position of shadow
                                 ),
                               ],
                             ),
                             child: ListTile(
                               title: Text(location,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color:
                                           Color.fromARGB(255, 15, 110, 183))),
                               selected: selectedLocation == location,
@@ -166,27 +156,34 @@ class _NICScreenState extends State<NICScreen> {
                                     selectedLocation = value;
                                   });
                                 },
-                                activeColor: Color.fromARGB(255, 15, 110, 183),
+                                activeColor:
+                                    const Color.fromARGB(255, 15, 110, 183),
                               ),
                             ),
                           ),
                         )
                         .toList(),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: selectedLocation != null
                         ? () {
+                            print(selectedDistrict);
+                            print(selectedLocation);
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => AppointmentScreen()),
+                                  builder: (context) => AppointmentScreen(
+                                        selectedDistrict: selectedDistrict!,
+                                        selectedLocation: selectedLocation!,
+                                      )),
                             );
                           }
                         : null,
-                    child: Text('Book Appointment',
+                    child: const Text('Book Appointment',
                         style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 15, 110, 183),
+                      backgroundColor: const Color.fromARGB(255, 15, 110, 183),
                       disabledForegroundColor: Colors.grey.withOpacity(0.38),
                       disabledBackgroundColor:
                           Colors.grey.withOpacity(0.12), // Color when disabled
@@ -203,6 +200,14 @@ class _NICScreenState extends State<NICScreen> {
 }
 
 class AppointmentScreen extends StatefulWidget {
+  final String selectedDistrict;
+  final String selectedLocation;
+
+  AppointmentScreen(
+      {Key? key,
+      required this.selectedDistrict,
+      required this.selectedLocation})
+      : super(key: key);
   @override
   _AppointmentScreenState createState() => _AppointmentScreenState();
 }
@@ -243,10 +248,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          title: Text(
-            'Select Date and Time',
-            style: TextStyle(color: Colors.white),
-          ),
+          title: const Text('Select Date and Time'),
           backgroundColor: Colors.blue),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -256,24 +258,26 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                 top: 30), // Added padding above the button
             child: ElevatedButton(
               onPressed: () => _selectDate(context),
-              child: Text('Select Date',
+              child: const Text('Select Date',
                   style: TextStyle(color: Color.fromARGB(255, 31, 100, 169))),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Center(
             child: Column(
               children: [
-                Text('Selected Date and Time:', style: TextStyle(fontSize: 18)),
-                SizedBox(height: 10),
+                const Text('Selected Date and Time:',
+                    style: TextStyle(fontSize: 18)),
+                const SizedBox(height: 10),
                 Text(_formatDateTime(selectedDate, selectedTime),
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.blue)),
-                SizedBox(height: 20),
-                Text('Available Time Slots:', style: TextStyle(fontSize: 18)),
-                SizedBox(height: 30),
+                const SizedBox(height: 20),
+                const Text('Available Time Slots:',
+                    style: TextStyle(fontSize: 18)),
+                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -298,7 +302,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         color: reservedTimeSlots
                                 .contains(availableTimeSlots[index])
                             ? Colors.grey.withOpacity(0.5)
-                            : Color.fromARGB(255, 101, 145, 217),
+                            : const Color.fromARGB(255, 101, 145, 217),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Center(
@@ -327,7 +331,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               onPressed: () {
                 _showAppointmentConfirmation(context);
               },
-              child: Text('Book Appointment',
+              child: const Text('Book Appointment',
                   style: TextStyle(color: Color.fromARGB(255, 31, 100, 169))),
             ),
           ),
@@ -342,11 +346,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(Duration(days: 30)),
+      lastDate: DateTime.now().add(const Duration(days: 30)),
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: Colors.blue, // header background color
               onPrimary: Colors.white, // header text color
               onSurface: Colors.black, // body text color
@@ -387,27 +391,25 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title:
-              Text('Selection Completed', style: TextStyle(color: Colors.blue)),
+          title: const Text('Selection Completed',
+              style: TextStyle(color: Colors.blue)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.check_circle, color: Colors.green, size: 40),
-              SizedBox(height: 10),
-              Text('Your appointment is completed for:',
-                  style:
-                      TextStyle(color: const Color.fromARGB(255, 81, 81, 81))),
-              SizedBox(height: 10),
+              const Icon(Icons.check_circle, color: Colors.green, size: 40),
+              const SizedBox(height: 10),
+              const Text('Your appointment is completed for:',
+                  style: TextStyle(color: Color.fromARGB(255, 81, 81, 81))),
+              const SizedBox(height: 10),
               Text(_formatDateTime(selectedDate, selectedTime),
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 0, 0, 0))),
-              SizedBox(height: 20),
-              Text('Click Continue to Fill Out Your Details:',
-                  style:
-                      TextStyle(color: const Color.fromARGB(255, 81, 81, 81))),
-              SizedBox(height: 10),
+                      color: Color.fromARGB(255, 0, 0, 0))),
+              const SizedBox(height: 20),
+              const Text('Click Continue to Fill Out Your Details:',
+                  style: TextStyle(color: Color.fromARGB(255, 81, 81, 81))),
+              const SizedBox(height: 10),
             ],
           ),
           actions: [
@@ -417,18 +419,25 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               },
               style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 116, 116, 116)),
-              child: Text('Cancel',
+              child: const Text('Cancel',
                   style: TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ApplicationFormScreen()));
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ApplicationFormScreen(
+                      selectedDistrict: widget.selectedDistrict,
+                      selectedLocation: widget.selectedLocation,
+                      selectedDate: selectedDate,
+                      selectedTime: selectedTime,
+                    ),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-              child: Text('Continue',
+              child: const Text('Continue',
                   style: TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
             ),
           ],
@@ -439,11 +448,31 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 }
 
 class ApplicationFormScreen extends StatefulWidget {
+  final String selectedDistrict;
+  final String selectedLocation;
+  final DateTime selectedDate;
+  final TimeOfDay selectedTime;
+
+  const ApplicationFormScreen({
+    Key? key,
+    required this.selectedDistrict,
+    required this.selectedLocation,
+    required this.selectedDate,
+    required this.selectedTime,
+  }) : super(key: key);
+
   @override
   _ApplicationFormScreenState createState() => _ApplicationFormScreenState();
 }
 
 class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _nicController = TextEditingController();
+  final TextEditingController _contactNumberController =
+      TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   DateTime? dateOfBirth;
   String? selectedProvince;
   String? selectedDistrict;
@@ -485,6 +514,38 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
     'Ratnapura',
     'Kegalle'
   ];
+  void submitToFirestore() {
+    if (_formKey.currentState!.validate()) {
+      Map<String, dynamic> formData = {
+        'firstName': _firstNameController.text,
+        'lastName': _lastNameController.text,
+        'nic': _nicController.text,
+        'contactNumber': _contactNumberController.text,
+        'email': _emailController.text,
+        'dateOfBirth': dateOfBirth != null
+            ? DateFormat('yyyy-MM-dd').format(dateOfBirth!)
+            : null,
+        'province': selectedProvince,
+        'district': selectedDistrict,
+        'selectedDistrict': widget.selectedDistrict,
+        "selectedLocation": widget.selectedLocation,
+        "selectedTime": widget.selectedTime,
+        "selectedDate": widget.selectedDate,
+        'userid': FirebaseAuth.instance.currentUser!.uid,
+      };
+
+      // Reference to Firestore collection
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('NICFormData');
+
+      // Add data to Firestore
+      users.add(formData).then((docRef) {
+        print('Document successfully written with ID: ${docRef.id}');
+      }).catchError((error) {
+        print('Error adding document: $error');
+      });
+    }
+  }
 
   Future<void> _selectDateOfBirth(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -495,13 +556,12 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Colors.blue, // header background color
-              onPrimary: Colors.white, // header text color
-              onSurface: Colors.black, // body text color
+            colorScheme: const ColorScheme.light(
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
             ),
-            dialogBackgroundColor:
-                Colors.white, // background color of the dialog
+            dialogBackgroundColor: Colors.white,
           ),
           child: child!,
         );
@@ -514,126 +574,198 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
     }
   }
 
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      print("First Name: ${_firstNameController.text}");
+      print("Last Name: ${_lastNameController.text}");
+      print("NIC: ${_nicController.text}");
+      print("Contact Number: ${_contactNumberController.text}");
+      print("Email: ${_emailController.text}");
+      print(
+          "Date of Birth: ${dateOfBirth != null ? DateFormat('yyyy-MM-dd').format(dateOfBirth!) : 'Not selected'}");
+      print("Province: $selectedProvince");
+      print("District: $selectedDistrict");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title:
-              Text('Application Form', style: TextStyle(color: Colors.white)),
-          backgroundColor: Colors.blue),
+        title: const Text('Application Form',
+            style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.blue,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'First Name',
-                  hintText: 'Enter your first name',
-                  border: OutlineInputBorder(),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: _firstNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'First Name',
+                    hintText: 'Enter your first name',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your first name';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Last Name',
-                  hintText: 'Enter your last name',
-                  border: OutlineInputBorder(),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _lastNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Last Name',
+                    hintText: 'Enter your last name',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your last name';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'NIC',
-                  hintText: 'Enter your NIC Number',
-                  border: OutlineInputBorder(),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _nicController,
+                  decoration: const InputDecoration(
+                    labelText: 'NIC',
+                    hintText: 'Enter your NIC Number',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty || value.length != 12) {
+                      return 'NIC should be exactly 12 characters';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              SizedBox(height: 10),
-              GestureDetector(
-                onTap: () => _selectDateOfBirth(context),
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Date of Birth',
-                      hintText: dateOfBirth == null
-                          ? 'Select your date of birth'
-                          : DateFormat('yyyy-MM-dd').format(dateOfBirth!),
-                      border: OutlineInputBorder(),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  onTap: () => _selectDateOfBirth(context),
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Date of Birth',
+                        hintText: dateOfBirth == null
+                            ? 'Select your date of birth'
+                            : DateFormat('yyyy-MM-dd').format(dateOfBirth!),
+                        border: const OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (dateOfBirth == null) {
+                          return 'Please select your date of birth';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: selectedProvince,
-                hint: Text('Select Province'),
-                onChanged: (value) {
-                  setState(() {
-                    selectedProvince = value;
-                  });
-                },
-                items: provinces.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  value: selectedProvince,
+                  hint: const Text('Select Province'),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedProvince = value;
+                    });
+                  },
+                  items:
+                      provinces.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select a province';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: selectedDistrict,
-                hint: Text('Select District'),
-                onChanged: (value) {
-                  setState(() {
-                    selectedDistrict = value;
-                  });
-                },
-                items: districts.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  value: selectedDistrict,
+                  hint: const Text('Select District'),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedDistrict = value;
+                    });
+                  },
+                  items:
+                      districts.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select a district';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Contact Number',
-                  hintText: 'Enter your contact number',
-                  border: OutlineInputBorder(),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _contactNumberController,
+                  decoration: const InputDecoration(
+                    labelText: 'Contact Number',
+                    hintText: 'Enter your contact number',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty || value.length != 10) {
+                      return 'Contact number should be exactly 10 digits';
+                    }
+                    return null;
+                  },
                 ),
-                keyboardType: TextInputType.phone,
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'Enter your email',
-                  border: OutlineInputBorder(),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'Enter your email',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        !value.contains('@')) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
                 ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  // Submit form data function
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor:
-                      Colors.blue, // This will set the text color to white
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: submitToFirestore,
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue,
+                  ),
+                  child: const Text('Submit'),
                 ),
-                child: Text('Submit'),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

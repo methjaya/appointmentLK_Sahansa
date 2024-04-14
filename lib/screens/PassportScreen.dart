@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -440,6 +442,13 @@ class ApplicationFormScreen extends StatefulWidget {
 }
 
 class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _nicController = TextEditingController();
+  final TextEditingController _contactNumberController =
+      TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   DateTime? dateOfBirth;
   String? selectedProvince;
   String? selectedDistrict;
@@ -481,6 +490,34 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
     'Ratnapura',
     'Kegalle'
   ];
+  void submitToFirestore() {
+    if (_formKey.currentState!.validate()) {
+      Map<String, dynamic> formData = {
+        'firstName': _firstNameController.text,
+        'lastName': _lastNameController.text,
+        'nic': _nicController.text,
+        'contactNumber': _contactNumberController.text,
+        'email': _emailController.text,
+        'dateOfBirth': dateOfBirth != null
+            ? DateFormat('yyyy-MM-dd').format(dateOfBirth!)
+            : null,
+        'province': selectedProvince,
+        'district': selectedDistrict,
+        'userid': FirebaseAuth.instance.currentUser!.uid,
+      };
+
+      // Reference to Firestore collection
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('PassportFormData');
+
+      // Add data to Firestore
+      users.add(formData).then((docRef) {
+        print('Document successfully written with ID: ${docRef.id}');
+      }).catchError((error) {
+        print('Error adding document: $error');
+      });
+    }
+  }
 
   Future<void> _selectDateOfBirth(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -492,12 +529,11 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.light(
-              primary: Colors.blue, // header background color
-              onPrimary: Colors.white, // header text color
-              onSurface: Colors.black, // body text color
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
             ),
-            dialogBackgroundColor:
-                Colors.white, // background color of the dialog
+            dialogBackgroundColor: Colors.white,
           ),
           child: child!,
         );
@@ -510,124 +546,197 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
     }
   }
 
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      print("First Name: ${_firstNameController.text}");
+      print("Last Name: ${_lastNameController.text}");
+      print("NIC: ${_nicController.text}");
+      print("Contact Number: ${_contactNumberController.text}");
+      print("Email: ${_emailController.text}");
+      print(
+          "Date of Birth: ${dateOfBirth != null ? DateFormat('yyyy-MM-dd').format(dateOfBirth!) : 'Not selected'}");
+      print("Province: $selectedProvince");
+      print("District: $selectedDistrict");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          AppBar(title: Text('Application Form'), backgroundColor: Colors.blue),
+      appBar: AppBar(
+        title: Text('Application Form', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.blue,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'First Name',
-                  hintText: 'Enter your first name',
-                  border: OutlineInputBorder(),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: _firstNameController,
+                  decoration: InputDecoration(
+                    labelText: 'First Name',
+                    hintText: 'Enter your first name',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your first name';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Last Name',
-                  hintText: 'Enter your last name',
-                  border: OutlineInputBorder(),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: _lastNameController,
+                  decoration: InputDecoration(
+                    labelText: 'Last Name',
+                    hintText: 'Enter your last name',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your last name';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'NIC',
-                  hintText: 'Enter your NIC Number',
-                  border: OutlineInputBorder(),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: _nicController,
+                  decoration: InputDecoration(
+                    labelText: 'NIC',
+                    hintText: 'Enter your NIC Number',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty || value.length != 12) {
+                      return 'NIC should be exactly 12 characters';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              SizedBox(height: 10),
-              GestureDetector(
-                onTap: () => _selectDateOfBirth(context),
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Date of Birth',
-                      hintText: dateOfBirth == null
-                          ? 'Select your date of birth'
-                          : DateFormat('yyyy-MM-dd').format(dateOfBirth!),
-                      border: OutlineInputBorder(),
+                SizedBox(height: 10),
+                GestureDetector(
+                  onTap: () => _selectDateOfBirth(context),
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Date of Birth',
+                        hintText: dateOfBirth == null
+                            ? 'Select your date of birth'
+                            : DateFormat('yyyy-MM-dd').format(dateOfBirth!),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (dateOfBirth == null) {
+                          return 'Please select your date of birth';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: selectedProvince,
-                hint: Text('Select Province'),
-                onChanged: (value) {
-                  setState(() {
-                    selectedProvince = value;
-                  });
-                },
-                items: provinces.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  value: selectedProvince,
+                  hint: Text('Select Province'),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedProvince = value;
+                    });
+                  },
+                  items:
+                      provinces.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select a province';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: selectedDistrict,
-                hint: Text('Select District'),
-                onChanged: (value) {
-                  setState(() {
-                    selectedDistrict = value;
-                  });
-                },
-                items: districts.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  value: selectedDistrict,
+                  hint: Text('Select District'),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedDistrict = value;
+                    });
+                  },
+                  items:
+                      districts.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select a district';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Contact Number',
-                  hintText: 'Enter your contact number',
-                  border: OutlineInputBorder(),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: _contactNumberController,
+                  decoration: InputDecoration(
+                    labelText: 'Contact Number',
+                    hintText: 'Enter your contact number',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty || value.length != 10) {
+                      return 'Contact number should be exactly 10 digits';
+                    }
+                    return null;
+                  },
                 ),
-                keyboardType: TextInputType.phone,
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'Enter your email',
-                  border: OutlineInputBorder(),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'Enter your email',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        !value.contains('@')) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
                 ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  // Submit form data function
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor:
-                      Colors.blue, // This will set the text color to white
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: submitToFirestore,
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue,
+                  ),
+                  child: Text('Submit'),
                 ),
-                child: Text('Submit'),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
