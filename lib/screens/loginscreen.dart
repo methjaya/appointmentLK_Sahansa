@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:responsivetutorial/main.dart';
+import 'package:responsivetutorial/screens/UserSelectionScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -72,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const FlutterLogo(size: 100), // Optional logo
+                  // const FlutterLogo(size: 100), // Optional logo
                   const SizedBox(height: 50),
                   Text(
                     isLogin ? "Welcome Back!" : "Register",
@@ -83,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 30),
                   if (!isLogin)
-                    buildTextField(_firstNameController, 'First Name',
+                    buildTextField(_firstNameController, '  First Name',
                         Icons.person, width),
                   if (!isLogin) const SizedBox(height: 20),
                   if (!isLogin)
@@ -246,9 +248,8 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         isLoading = false;
       });
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (_) =>
-              HomeScreen())); // Assuming HomeScreen is your home page
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => UserSelectionScreen())); //
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login failed: ${e.toString()}')));
@@ -283,19 +284,5 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading = false;
       });
     }
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Home"),
-      ),
-      body: Center(
-        child: Text("Welcome Home!"),
-      ),
-    );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:responsivetutorial/screens/UserSelectionScreen.dart';
+import 'package:responsivetutorial/screens/loginScreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -63,8 +64,7 @@ class WelcomeScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    CupertinoPageRoute(
-                        builder: (context) => UserSelectionScreen()),
+                    CupertinoPageRoute(builder: (context) => LoginScreen()),
                   );
                 },
               ),

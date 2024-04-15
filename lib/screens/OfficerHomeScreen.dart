@@ -2,19 +2,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:responsivetutorial/firebase_options.dart';
-
-import 'package:responsivetutorial/screens/LicenseScreen.dart';
-import 'package:responsivetutorial/screens/NICScreen.dart';
-import 'package:responsivetutorial/screens/OnGoingScreen.dart';
-import 'package:responsivetutorial/screens/PassportScreen.dart';
-import 'package:responsivetutorial/screens/PensionScreen.dart';
+import 'package:responsivetutorial/main.dart';
 import 'package:responsivetutorial/screens/LicenseInstructions.dart';
+import 'package:responsivetutorial/screens/LicenseScreen.dart';
 import 'package:responsivetutorial/screens/NICInstructions.dart';
+import 'package:responsivetutorial/screens/NICScreen.dart';
+import 'package:responsivetutorial/screens/OfficerOnGoingScreen.dart';
+import 'package:responsivetutorial/screens/OnGoingScreen.dart';
 import 'package:responsivetutorial/screens/PassportInstructions.dart';
+import 'package:responsivetutorial/screens/PassportScreen.dart';
 import 'package:responsivetutorial/screens/PensionInstructions.dart';
-import 'package:responsivetutorial/screens/UserSelectionScreen.dart';
+import 'package:responsivetutorial/screens/PensionScreen.dart';
+import 'package:responsivetutorial/screens/WelcomeScreen.dart';
 import 'package:responsivetutorial/screens/loginScreen.dart';
-import 'package:responsivetutorial/screens/welcomescreen.dart';
 
 Future<void> main() async {
   await Firebase.initializeApp(
@@ -40,12 +40,12 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatefulWidget {
+class OfficerHomeScreen extends StatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _OfficerHomeScreen createState() => _OfficerHomeScreen();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _OfficerHomeScreen extends State<OfficerHomeScreen> {
   String _searchQuery = '';
 
   void _handleSearch(String query) {
@@ -157,7 +157,8 @@ class HeaderSection extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => OngoingScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => OfficerOngoingScreen()),
                   );
                   // Handle notification icon press here
                 },
@@ -185,7 +186,7 @@ class HeaderSection extends StatelessWidget {
         ),
         SizedBox(height: 10),
         Text(
-          'Hi, User',
+          'Hi, Officer',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,

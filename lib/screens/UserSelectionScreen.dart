@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:responsivetutorial/homepage.dart';
+import 'package:responsivetutorial/main.dart';
+import 'package:responsivetutorial/screens/OfficerHomeScreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -56,12 +58,12 @@ class UserSelectionScreen extends StatelessWidget {
                 RoleCard(
                   role: "Citizen",
                   icon: Icons.people,
-                  navigationPage: HomePage(),
+                  navigationPage: HomeScreen(),
                 ),
                 RoleCard(
                   role: "Officer",
                   icon: Icons.security,
-                  navigationPage: OfficerPage(),
+                  navigationPage: OfficerHomeScreen(),
                 ),
                 RoleCard(
                   role: "Admin",

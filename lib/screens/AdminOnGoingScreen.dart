@@ -9,17 +9,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'APPOINTMENT_APP',
-      home: OngoingScreen(),
+      home: AdminOngoingScreen(),
     );
   }
 }
 
-class OngoingScreen extends StatefulWidget {
+class AdminOngoingScreen extends StatefulWidget {
   @override
-  _OngoingScreenState createState() => _OngoingScreenState();
+  _AdminOngoingScreenState createState() => _AdminOngoingScreenState();
 }
 
-class _OngoingScreenState extends State<OngoingScreen> {
+class _AdminOngoingScreenState extends State<AdminOngoingScreen> {
   List<Map<String, String>> appointments = [
     {
       'time': '09:00 AM',

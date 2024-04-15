@@ -1,51 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:responsivetutorial/firebase_options.dart';
-
+import 'package:responsivetutorial/screens/LicenseInstructions.dart';
 import 'package:responsivetutorial/screens/LicenseScreen.dart';
+import 'package:responsivetutorial/screens/NICInstructions.dart';
 import 'package:responsivetutorial/screens/NICScreen.dart';
 import 'package:responsivetutorial/screens/OnGoingScreen.dart';
-import 'package:responsivetutorial/screens/PassportScreen.dart';
-import 'package:responsivetutorial/screens/PensionScreen.dart';
-import 'package:responsivetutorial/screens/LicenseInstructions.dart';
-import 'package:responsivetutorial/screens/NICInstructions.dart';
 import 'package:responsivetutorial/screens/PassportInstructions.dart';
+import 'package:responsivetutorial/screens/PassportScreen.dart';
 import 'package:responsivetutorial/screens/PensionInstructions.dart';
-import 'package:responsivetutorial/screens/UserSelectionScreen.dart';
-import 'package:responsivetutorial/screens/loginScreen.dart';
-import 'package:responsivetutorial/screens/welcomescreen.dart';
+import 'package:responsivetutorial/screens/PensionScreen.dart';
+import 'package:responsivetutorial/screens/WelcomeScreen.dart';
 
-Future<void> main() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
+class AdminHomeScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return HomeScreen();
-            } else {
-              return const LoginScreen();
-            }
-          }),
-    );
-  }
+  _AdminHomeScreen createState() => _AdminHomeScreen();
 }
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
+class _AdminHomeScreen extends State<AdminHomeScreen> {
   String _searchQuery = '';
 
   void _handleSearch(String query) {
@@ -173,7 +144,7 @@ class HeaderSection extends StatelessWidget {
               child: IconButton(
                 icon: Icon(Icons.exit_to_app, color: Colors.white),
                 onPressed: () {
-                  //FirebaseAuth.instance.signOut();
+                  FirebaseAuth.instance.signOut();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => WelcomeScreen()),
@@ -185,7 +156,7 @@ class HeaderSection extends StatelessWidget {
         ),
         SizedBox(height: 10),
         Text(
-          'Hi, User',
+          'Hi, Officer',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
