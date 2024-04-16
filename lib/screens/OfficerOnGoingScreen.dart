@@ -68,8 +68,7 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
           'title': docData['title'] ?? 'No title',
           'location': docData['location'] ?? 'No location',
           'NIC': docData['NIC'] ?? 'No NIC',
-          'phoneNumber': docData['phoneNumber'] ??
-              'No phone' // Assuming phoneNumber is stored with each document for NIC
+          'phoneNumber': docData['phoneNumber'] ?? 'No phone'
         });
       }
     }
@@ -100,7 +99,7 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width *
-        0.5; // Responsive width for search bar and dropdown
+        0.5; // Responsive width for appointment cards
 
     return Scaffold(
       appBar: AppBar(
@@ -130,26 +129,40 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: width,
+                    width: MediaQuery.of(context).size.width * 0.5,
                     padding: EdgeInsets.all(8.0),
-                    child: DropdownButton<String>(
-                      value: selectedFilter,
-                      isExpanded: true,
-                      style: TextStyle(color: Colors.blue, fontSize: 16),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedFilter = newValue!;
-                          filterAppointments(searchController
-                              .text); // Re-filter based on new selection
-                        });
-                      },
-                      items: <String>['NIC', 'Passport', 'License', 'Pension']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                    decoration: BoxDecoration(
+                      color: Colors.blue, // Set the background color here
+                      borderRadius: BorderRadius.circular(
+                          10), // Optional: for rounded corners
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: selectedFilter,
+                        isExpanded: true,
+                        icon: Icon(Icons.arrow_drop_down,
+                            color: Colors
+                                .white), // Optional: customize the dropdown arrow icon
+                        dropdownColor: Colors
+                            .blue, // Optional: changes the dropdown menu's background color
+                        style: TextStyle(
+                          color: Colors.white, // Text color inside the dropdown
+                          fontSize: 16,
+                        ),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedFilter = newValue!;
+                            filterAppointments(searchController.text);
+                          });
+                        },
+                        items: <String>['NIC', 'Passport', 'License', 'Pension']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ],
@@ -179,14 +192,17 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
                     return Card(
                       margin: EdgeInsets.all(8),
                       color: Colors.white.withOpacity(0.85),
-                      child: ListTile(
-                        title: Text(appointment['title'],
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 15, 110, 183))),
-                        subtitle: Text(
-                            '${appointment['selectedDate']} at ${appointment['selectedTime']}\nLocation: ${appointment['location']}\nNIC: ${appointment['NIC']}\nPhone: ${appointment['phoneNumber']}'),
-                        leading: Icon(Icons.event_available,
-                            color: Color.fromARGB(255, 15, 110, 183)),
+                      child: Container(
+                        width: width,
+                        child: ListTile(
+                          title: Text(appointment['title'],
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 15, 110, 183))),
+                          subtitle: Text(
+                              '${appointment['selectedDate']} at ${appointment['selectedTime']}\nLocation: ${appointment['location']}\nNIC: ${appointment['NIC']}\nPhone: ${appointment['phoneNumber']}'),
+                          leading: Icon(Icons.event_available,
+                              color: Color.fromARGB(255, 15, 110, 183)),
+                        ),
                       ),
                     );
                   },

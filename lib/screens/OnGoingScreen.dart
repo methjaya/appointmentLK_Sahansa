@@ -70,6 +70,16 @@ class _OngoingScreenState extends State<OngoingScreen> {
     return data;
   }
 
+  void cancelAppointment(int index) {
+    // Placeholder for cancel logic
+    print("Cancelling appointment at index: $index");
+    // Remove the appointment from the list
+    setState(() {
+      dataFuture = Future.value(List.from(dataFuture as List)..removeAt(index));
+    });
+    // Implement actual delete/cancel operation in your database
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,16 +113,14 @@ class _OngoingScreenState extends State<OngoingScreen> {
                 } else if (snapshot.hasError) {
                   return Text("Error: ${snapshot.error}");
                 } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  return ListView(
                     children: snapshot.data!.asMap().entries.map((entry) {
-                      int idx =
-                          entry.key + 1; // Appointment number starting from 1
+                      int idx = entry.key; // Appointment index
                       Map<String, dynamic> appointment = entry.value;
                       return Container(
                         width: MediaQuery.of(context).size.width *
                             0.8, // 80% of screen width
-                        margin: EdgeInsets.only(top: 10, bottom: 10),
+                        margin: EdgeInsets.symmetric(vertical: 10),
                         child: Card(
                           color: Colors.white.withOpacity(0.85),
                           child: ListTile(
@@ -123,16 +131,9 @@ class _OngoingScreenState extends State<OngoingScreen> {
                                 '${appointment['selectedDate']} at ${appointment['selectedTime']}\nLocation: ${appointment['location']}'),
                             leading: Icon(Icons.event_available,
                                 color: Color.fromARGB(255, 15, 110, 183)),
-                            trailing: Container(
-                              width: 30,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                color: Colors.blue,
-                                shape: BoxShape.circle,
-                              ),
-                              alignment: Alignment.center,
-                              child: Text('$idx',
-                                  style: TextStyle(color: Colors.white)),
+                            trailing: IconButton(
+                              icon: Icon(Icons.cancel, color: Colors.red),
+                              onPressed: () => cancelAppointment(idx),
                             ),
                           ),
                         ),
