@@ -1,22 +1,51 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:responsivetutorial/screens/LicenseInstructions.dart';
-import 'package:responsivetutorial/screens/LicenseScreen.dart';
-import 'package:responsivetutorial/screens/NICInstructions.dart';
-import 'package:responsivetutorial/screens/NICScreen.dart';
-import 'package:responsivetutorial/screens/OnGoingScreen.dart';
-import 'package:responsivetutorial/screens/PassportInstructions.dart';
-import 'package:responsivetutorial/screens/PassportScreen.dart';
-import 'package:responsivetutorial/screens/PensionInstructions.dart';
-import 'package:responsivetutorial/screens/PensionScreen.dart';
-import 'package:responsivetutorial/screens/WelcomeScreen.dart';
+import 'package:AppointmentsbySahansa/firebase_options.dart';
+import 'package:AppointmentsbySahansa/main.dart';
+import 'package:AppointmentsbySahansa/screens/Instructions/LicenseInstructions.dart';
+import 'package:AppointmentsbySahansa/screens/LicenseScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Instructions/NICInstructions.dart';
+import 'package:AppointmentsbySahansa/screens/NICScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Officer/OfficerOnGoingScreen.dart';
+import 'package:AppointmentsbySahansa/screens/User/OnGoingScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Instructions/PassportInstructions.dart';
+import 'package:AppointmentsbySahansa/screens/PassportScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Instructions/PensionInstructions.dart';
+import 'package:AppointmentsbySahansa/screens/PensionScreen.dart';
+import 'package:AppointmentsbySahansa/screens/WelcomeScreen.dart';
+import 'package:AppointmentsbySahansa/screens/loginScreen.dart';
 
-class AdminHomeScreen extends StatefulWidget {
-  @override
-  _AdminHomeScreen createState() => _AdminHomeScreen();
+Future<void> main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MyApp());
 }
 
-class _AdminHomeScreen extends State<AdminHomeScreen> {
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return OfficerHomeScreen();
+            } else {
+              return const LoginScreen();
+            }
+          }),
+    );
+  }
+}
+
+class OfficerHomeScreen extends StatefulWidget {
+  @override
+  _OfficerHomeScreen createState() => _OfficerHomeScreen();
+}
+
+class _OfficerHomeScreen extends State<OfficerHomeScreen> {
   String _searchQuery = '';
 
   void _handleSearch(String query) {
@@ -128,7 +157,8 @@ class HeaderSection extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => OngoingScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => OfficerOngoingScreen()),
                   );
                   // Handle notification icon press here
                 },
@@ -144,7 +174,7 @@ class HeaderSection extends StatelessWidget {
               child: IconButton(
                 icon: Icon(Icons.exit_to_app, color: Colors.white),
                 onPressed: () {
-                  FirebaseAuth.instance.signOut();
+                  //FirebaseAuth.instance.signOut();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => WelcomeScreen()),

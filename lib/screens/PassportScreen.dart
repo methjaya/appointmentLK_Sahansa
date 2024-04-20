@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:responsivetutorial/screens/AppointmentScreen.dart';
+import 'package:AppointmentsbySahansa/screens/AppointmentScreen.dart';
 
 void main() {
   runApp(MyApp());

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:responsivetutorial/screens/ApplicationFormScreen.dart';
+import 'package:AppointmentsbySahansa/screens/ApplicationFormScreen.dart';
 
 class AppointmentScreen extends StatefulWidget {
   final String selectedDistrict;

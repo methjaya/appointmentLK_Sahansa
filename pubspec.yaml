@@ -1,4 +1,4 @@
-name: responsivetutorial
+name: AppointmentsbySahansa
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -99,3 +99,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+icons_launcher:
+  image_path: "assets/select1.jpeg"
+  platforms:
+    android:
+      enable: true
+    ios:
+      enable: true

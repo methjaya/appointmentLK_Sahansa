@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:responsivetutorial/screens/ApplicationFormScreen.dart';
-import 'package:responsivetutorial/screens/AppointmentScreen.dart';
+import 'package:AppointmentsbySahansa/screens/ApplicationFormScreen.dart';
+import 'package:AppointmentsbySahansa/screens/AppointmentScreen.dart';
 
 class NICScreen extends StatefulWidget {
   const NICScreen({Key? key}) : super(key: key);

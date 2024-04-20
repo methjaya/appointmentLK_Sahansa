@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:responsivetutorial/screens/UserSelectionScreen.dart';
-import 'package:responsivetutorial/screens/loginScreen.dart';
+import 'package:AppointmentsbySahansa/screens/UserSelectionScreen.dart';
+import 'package:AppointmentsbySahansa/screens/loginScreen.dart';
 
 void main() {
   runApp(MyApp());

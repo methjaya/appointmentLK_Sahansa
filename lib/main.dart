@@ -1,37 +1,48 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:responsivetutorial/firebase_options.dart';
+import 'package:AppointmentsbySahansa/firebase_options.dart';
+import 'package:AppointmentsbySahansa/screens/Admin/AdminHomeScreen.dart';
 
-import 'package:responsivetutorial/screens/LicenseScreen.dart';
-import 'package:responsivetutorial/screens/NICScreen.dart';
-import 'package:responsivetutorial/screens/OnGoingScreen.dart';
-import 'package:responsivetutorial/screens/PassportScreen.dart';
-import 'package:responsivetutorial/screens/PensionScreen.dart';
-import 'package:responsivetutorial/screens/LicenseInstructions.dart';
-import 'package:responsivetutorial/screens/NICInstructions.dart';
-import 'package:responsivetutorial/screens/PassportInstructions.dart';
-import 'package:responsivetutorial/screens/PensionInstructions.dart';
-import 'package:responsivetutorial/screens/UserSelectionScreen.dart';
-import 'package:responsivetutorial/screens/loginScreen.dart';
-import 'package:responsivetutorial/screens/welcomescreen.dart';
+import 'package:AppointmentsbySahansa/screens/LicenseScreen.dart';
+import 'package:AppointmentsbySahansa/screens/NICScreen.dart';
+import 'package:AppointmentsbySahansa/screens/User/OnGoingScreen.dart';
+import 'package:AppointmentsbySahansa/screens/PassportScreen.dart';
+import 'package:AppointmentsbySahansa/screens/PensionScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Instructions/LicenseInstructions.dart';
+import 'package:AppointmentsbySahansa/screens/Instructions/NICInstructions.dart';
+import 'package:AppointmentsbySahansa/screens/Instructions/PassportInstructions.dart';
+import 'package:AppointmentsbySahansa/screens/Instructions/PensionInstructions.dart';
+import 'package:AppointmentsbySahansa/screens/UserSelectionScreen.dart';
+import 'package:AppointmentsbySahansa/screens/loginScreen.dart';
+import 'package:AppointmentsbySahansa/screens/welcomescreen.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // This must come first!
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(MyApp());
 }
 
+/*here I have replaced the beolow code with the above one cuz earlier it showed some rror in a runner file with missing POD.
+Future<void> main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MyApp());
+}
+*/
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return WelcomeScreen();
+              return AdminHomeScreen(); //WelcomeScreen(); later chang eto WelcomeScreen
             } else {
               return const LoginScreen();
             }

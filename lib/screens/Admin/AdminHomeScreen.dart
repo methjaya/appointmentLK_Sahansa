@@ -1,20 +1,21 @@
+import 'package:AppointmentsbySahansa/screens/Admin/AdminNICScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:responsivetutorial/firebase_options.dart';
-import 'package:responsivetutorial/main.dart';
-import 'package:responsivetutorial/screens/LicenseInstructions.dart';
-import 'package:responsivetutorial/screens/LicenseScreen.dart';
-import 'package:responsivetutorial/screens/NICInstructions.dart';
-import 'package:responsivetutorial/screens/NICScreen.dart';
-import 'package:responsivetutorial/screens/OfficerOnGoingScreen.dart';
-import 'package:responsivetutorial/screens/OnGoingScreen.dart';
-import 'package:responsivetutorial/screens/PassportInstructions.dart';
-import 'package:responsivetutorial/screens/PassportScreen.dart';
-import 'package:responsivetutorial/screens/PensionInstructions.dart';
-import 'package:responsivetutorial/screens/PensionScreen.dart';
-import 'package:responsivetutorial/screens/WelcomeScreen.dart';
-import 'package:responsivetutorial/screens/loginScreen.dart';
+import 'package:AppointmentsbySahansa/firebase_options.dart';
+import 'package:AppointmentsbySahansa/main.dart';
+import 'package:AppointmentsbySahansa/screens/Instructions/LicenseInstructions.dart';
+import 'package:AppointmentsbySahansa/screens/LicenseScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Instructions/NICInstructions.dart';
+import 'package:AppointmentsbySahansa/screens/NICScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Officer/OfficerOnGoingScreen.dart';
+import 'package:AppointmentsbySahansa/screens/User/OnGoingScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Instructions/PassportInstructions.dart';
+import 'package:AppointmentsbySahansa/screens/PassportScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Instructions/PensionInstructions.dart';
+import 'package:AppointmentsbySahansa/screens/PensionScreen.dart';
+import 'package:AppointmentsbySahansa/screens/WelcomeScreen.dart';
+import 'package:AppointmentsbySahansa/screens/loginScreen.dart';
 
 Future<void> main() async {
   await Firebase.initializeApp(
@@ -40,12 +41,12 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class OfficerHomeScreen extends StatefulWidget {
+class AdminHomeScreen extends StatefulWidget {
   @override
-  _OfficerHomeScreen createState() => _OfficerHomeScreen();
+  _AdminHomeScreen createState() => _AdminHomeScreen();
 }
 
-class _OfficerHomeScreen extends State<OfficerHomeScreen> {
+class _AdminHomeScreen extends State<AdminHomeScreen> {
   String _searchQuery = '';
 
   void _handleSearch(String query) {
@@ -88,8 +89,8 @@ class _OfficerHomeScreen extends State<OfficerHomeScreen> {
                 child: Column(
                   children: [
                     SizedBox(height: 20),
-                    InstructionSection(),
-                    ServiceSection(),
+                    DashboardSection(),
+                    //ServiceSection(),
                     AppointmentTitleSection(),
                     MakeAppointmentSection(filteredServices: filteredServices),
                   ],
@@ -186,7 +187,7 @@ class HeaderSection extends StatelessWidget {
         ),
         SizedBox(height: 10),
         Text(
-          'Hi, Officer',
+          'Hi, Admin',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -206,85 +207,73 @@ class HeaderSection extends StatelessWidget {
   }
 }
 
-class InstructionSection extends StatelessWidget {
+class DashboardSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20.0),
-      child: Text(
-        'Instructions',
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 22,
+      padding: const EdgeInsets.only(right: 10, left: 20),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            DashboardCard(title: 'Total Users', value: '1,234'),
+            SizedBox(width: 20),
+            DashboardCard(title: 'NIC Bookings', value: '340'),
+            SizedBox(width: 20),
+            DashboardCard(title: 'Passport Bookings', value: '212'),
+            SizedBox(width: 20),
+            DashboardCard(title: 'License Bookings', value: '89'),
+            SizedBox(width: 20),
+            DashboardCard(title: 'Pension Bookings', value: '58'),
+          ],
         ),
       ),
     );
   }
 }
 
-class ServiceSection extends StatelessWidget {
+class DashboardCard extends StatelessWidget {
+  final String title;
+  final String value;
+
+  const DashboardCard({Key? key, required this.title, required this.value})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          ServiceButton(
-              label: 'NIC',
-              icon: Icons.credit_card,
-              instructionScreen: NICInstructions()),
-          ServiceButton(
-              label: 'Passport',
-              icon: Icons.book,
-              instructionScreen: PassportInstructions()),
-          ServiceButton(
-              label: 'License',
-              icon: Icons.car_rental,
-              instructionScreen: LicenseInstructions()),
-          ServiceButton(
-              label: 'Pension',
-              icon: Icons.monetization_on,
-              instructionScreen: PensionInstructions()),
+    return Container(
+      width: 160,
+      height: 100,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
         ],
       ),
-    );
-  }
-}
-
-class ServiceButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final Widget instructionScreen;
-
-  const ServiceButton(
-      {required this.label,
-      required this.icon,
-      required this.instructionScreen});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => instructionScreen,
-          ),
-        );
-      },
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 30,
-            child: Icon(icon, size: 30),
-            backgroundColor: Colors.white,
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           SizedBox(height: 8),
           Text(
-            label,
-            style: TextStyle(color: Colors.white),
+            value,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue[800],
+            ),
           ),
         ],
       ),
@@ -298,7 +287,7 @@ class AppointmentTitleSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
       child: Text(
-        'Make Your Appointment',
+        'View the Appointments',
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
@@ -318,9 +307,8 @@ class MakeAppointmentSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double cardSize =
-        screenWidth > 800 ? screenWidth * 0.25 : screenWidth * 0.4;
-    double maxWidth = screenWidth * 0.8;
+    double cardSize = screenWidth > 800 ? screenWidth * 0.3 : screenWidth * 0.5;
+    double maxWidth = screenWidth * 0.9;
     final ScrollController scrollController = ScrollController();
 
     return Expanded(
@@ -348,11 +336,24 @@ class MakeAppointmentSection extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
+                        // Navigation logic based on service type
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                filteredServices[index]['screen'],
+                            builder: (context) {
+                              switch (filteredServices[index]['type']) {
+                                case 'NIC':
+                                  return AdminNICScreen(); // Or NICScreen if it's more appropriate
+                                case 'Passport':
+                                  return PassportInstructions();
+                                case 'License':
+                                  return LicenseInstructions();
+                                case 'Pension':
+                                  return PensionInstructions();
+                                default:
+                                  return AdminNICScreen(); // You might want to create a generic error screen
+                              }
+                            },
                           ),
                         );
                       },
@@ -410,34 +411,6 @@ class MakeAppointmentSection extends StatelessWidget {
     );
   }
 }
-
-// Update the `services` list to include image paths
-final List<Map<String, dynamic>> services = [
-  {
-    'name': 'NIC',
-    'icon': Icons.credit_card,
-    'screen': NICScreen(),
-    'image': 'assets/nic.jpg'
-  },
-  {
-    'name': 'Passport',
-    'icon': Icons.book,
-    'screen': PassportScreen(),
-    'image': 'assets/passport.png'
-  },
-  {
-    'name': 'License',
-    'icon': Icons.car_rental,
-    'screen': LicenseScreen(),
-    'image': 'assets/license.jpg'
-  },
-  {
-    'name': 'Pension',
-    'icon': Icons.monetization_on,
-    'screen': PensionScreen(),
-    'image': 'assets/pension.jpg'
-  },
-];
 
 final List<Map<String, dynamic>> ongoingAppointments = [
   {

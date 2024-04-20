@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:responsivetutorial/homepage.dart';
-import 'package:responsivetutorial/main.dart';
-import 'package:responsivetutorial/screens/OfficerHomeScreen.dart';
+import 'package:AppointmentsbySahansa/homepage.dart';
+import 'package:AppointmentsbySahansa/main.dart';
+import 'package:AppointmentsbySahansa/screens/Admin/AdminHomeScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Officer/OfficerHomeScreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -68,7 +69,7 @@ class UserSelectionScreen extends StatelessWidget {
                 RoleCard(
                   role: "Admin",
                   icon: Icons.admin_panel_settings,
-                  navigationPage: AdminPage(),
+                  navigationPage: AdminHomeScreen(),
                 ),
               ],
             ),
@@ -121,37 +122,6 @@ class RoleCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-// Example pages for each role
-class CitizenPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Citizen Page')),
-      body: Center(child: Text('Welcome, Citizen!')),
-    );
-  }
-}
-
-class OfficerPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Officer Page')),
-      body: Center(child: Text('Welcome, Officer!')),
-    );
-  }
-}
-
-class AdminPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Admin Page')),
-      body: Center(child: Text('Welcome, Admin!')),
     );
   }
 }

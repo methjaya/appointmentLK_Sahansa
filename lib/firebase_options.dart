@@ -70,6 +70,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '286790954704',
     projectId: 'appointmentbookingcorrect',
     storageBucket: 'appointmentbookingcorrect.appspot.com',
-    iosBundleId: 'com.example.responsivetutorial',
+    iosBundleId: 'com.example.AppointmentsbySahansa',
   );
 }

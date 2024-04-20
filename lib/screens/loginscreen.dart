@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:responsivetutorial/main.dart';
-import 'package:responsivetutorial/screens/UserSelectionScreen.dart';
+import 'package:AppointmentsbySahansa/main.dart';
+import 'package:AppointmentsbySahansa/screens/UserSelectionScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -23,6 +24,46 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _selectedDistrict;
   bool isLoading = false;
   bool isLogin = true; // Toggle between login and register
+
+  Future<void> _register() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({
+        'firstName': _firstNameController.text.trim(),
+        'lastName': _lastNameController.text.trim(),
+        'nic': _nicController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'district': _selectedDistrict,
+      });
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (_) => HomeScreen()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration failed: ${e.toString()}')));
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   final List<String> districts = [
     "Ampara",
@@ -161,18 +202,32 @@ class _LoginScreenState extends State<LoginScreen> {
           if (value == null || value.isEmpty) {
             return '$hintText cannot be empty';
           }
-          if (hintText == 'Email' && !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-            return 'Enter a valid email';
-          }
-          if (hintText == 'NIC' && value.length != 12) {
-            return 'NIC must be 12 characters long';
-          }
-          if (hintText == 'Phone Number' && value.length != 10) {
-            return 'Phone number must be 10 digits long';
-          }
-          if (hintText == 'Confirm Password' &&
-              value != _passwordController.text) {
-            return 'Passwords do not match';
+          switch (hintText) {
+            case 'Email':
+              if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                return 'Enter a valid email';
+              }
+              break;
+            case 'NIC':
+              if (value.length != 12) {
+                return 'NIC must be 12 characters long';
+              }
+              break;
+            case 'Phone Number':
+              if (value.length != 10) {
+                return 'Phone number must be 10 digits long';
+              }
+              break;
+            case 'Password':
+              if (value.length < 6) {
+                return 'Password must be at least 6 characters';
+              }
+              break;
+            case 'Confirm Password':
+              if (value != _passwordController.text) {
+                return 'Passwords do not match';
+              }
+              break;
           }
           return null;
         },
@@ -253,33 +308,6 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login failed: ${e.toString()}')));
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _register() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      final UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-      // Navigate to home screen or handle successful registration
-      setState(() {
-        isLoading = false;
-      });
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (_) =>
-              HomeScreen())); // Assuming HomeScreen is your home page
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration failed: ${e.toString()}')));
       setState(() {
         isLoading = false;
       });
