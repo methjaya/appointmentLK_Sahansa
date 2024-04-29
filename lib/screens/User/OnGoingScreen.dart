@@ -71,13 +71,10 @@ class _OngoingScreenState extends State<OngoingScreen> {
   }
 
   void cancelAppointment(int index) {
-    // Placeholder for cancel logic
     print("Cancelling appointment at index: $index");
-    // Remove the appointment from the list
     setState(() {
       dataFuture = Future.value(List.from(dataFuture as List)..removeAt(index));
     });
-    // Implement actual delete/cancel operation in your database
   }
 
   @override
@@ -88,39 +85,37 @@ class _OngoingScreenState extends State<OngoingScreen> {
             Text('Ongoing Appointments', style: TextStyle(color: Colors.white)),
         backgroundColor: Color.fromARGB(255, 15, 110, 183),
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/nic.jpg'),
-                fit: BoxFit.cover,
-              ),
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.black.withOpacity(0.5), Colors.transparent],
-              ),
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/nic.jpg'),
+            fit: BoxFit.cover,
           ),
-          Center(
-            child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: dataFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text("Error: ${snapshot.error}");
-                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                  return ListView(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.black.withOpacity(0.5), Colors.transparent],
+          ),
+        ),
+        child: Center(
+          child: FutureBuilder<List<Map<String, dynamic>>>(
+            future: dataFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text("Error: ${snapshot.error}");
+              } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                return SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: snapshot.data!.asMap().entries.map((entry) {
-                      int idx = entry.key; // Appointment index
+                      int idx = entry.key;
                       Map<String, dynamic> appointment = entry.value;
                       return Container(
-                        width: MediaQuery.of(context).size.width *
-                            0.8, // 80% of screen width
-                        margin: EdgeInsets.symmetric(vertical: 10),
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        constraints: BoxConstraints(maxWidth: 600),
+                        margin: EdgeInsets.all(10),
                         child: Card(
                           color: Colors.white.withOpacity(0.85),
                           child: ListTile(
@@ -139,14 +134,14 @@ class _OngoingScreenState extends State<OngoingScreen> {
                         ),
                       );
                     }).toList(),
-                  );
-                } else {
-                  return Text("No appointments found");
-                }
-              },
-            ),
+                  ),
+                );
+              } else {
+                return Text("No appointments found");
+              }
+            },
           ),
-        ],
+        ),
       ),
     );
   }

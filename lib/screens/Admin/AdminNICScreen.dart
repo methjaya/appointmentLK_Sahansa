@@ -1,5 +1,20 @@
+import 'package:AppointmentsbySahansa/screens/Admin/AdminHomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'AppointmentsBySahansa',
+      home: AdminNICScreen(),
+    );
+  }
+}
 
 class AdminNICScreen extends StatefulWidget {
   @override
@@ -9,9 +24,9 @@ class AdminNICScreen extends StatefulWidget {
 class _AdminNICScreenState extends State<AdminNICScreen> {
   DateTime? selectedDate;
   String searchQuery = '';
-  // Mock data for the list of appointments
+
   final List<Map<String, dynamic>> appointments = [
-    {'name': 'John Doe', 'time': '09:00 AM', 'nic': '123456789V'},
+    {'name': 'Johni Doe', 'time': '09:00 AM', 'nic': '123456789V'},
     {'name': 'Jane Smith', 'time': '10:00 AM', 'nic': '987654321V'},
     {'name': 'Alice Johnson', 'time': '11:00 AM', 'nic': '192837465V'},
     {'name': 'Bob Brown', 'time': '12:00 PM', 'nic': '564738291V'},
@@ -63,41 +78,45 @@ class _AdminNICScreenState extends State<AdminNICScreen> {
   }
 
   Widget _buildAppointmentCard(Map<String, dynamic> appointment, int index) {
-    return Card(
-      color: Colors.blueGrey[100],
-      elevation: 4,
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: ListTile(
-        leading: Icon(Icons.person, size: 40),
-        title: Text(appointment['name']),
-        subtitle: Text("NIC: ${appointment['nic']}"),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              appointment['time'],
-              style: TextStyle(
-                  color:
-                      Colors.blue[800], // Highlight the time with a theme color
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16),
+    return Center(
+      child: Container(
+        width: 600,
+        child: Card(
+          color: Colors.blueGrey[100],
+          elevation: 4,
+          margin: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+          child: ListTile(
+            leading: Icon(Icons.person, size: 40),
+            title: Text(appointment['name']),
+            subtitle: Text("NIC: ${appointment['nic']}"),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  appointment['time'],
+                  style: TextStyle(
+                      color: Colors.blue[800],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 8),
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: Colors.blue[800],
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    (index + 1).toString(),
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             ),
-            Container(
-              margin: EdgeInsets.only(top: 8),
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.blue[800],
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                (index + 1).toString(),
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -108,6 +127,16 @@ class _AdminNICScreenState extends State<AdminNICScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('NIC Appointments'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AdminHomeScreen(),
+                ));
+          },
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.calendar_today),

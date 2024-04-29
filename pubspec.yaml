@@ -1,5 +1,5 @@
 name: AppointmentsbySahansa
-description: A new Flutter project.
+description: A project by Sahansa Jayawardhana (Hapuarachchige Jayawardhana - 10818147).
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -68,8 +68,10 @@ flutter:
     - assets/license.jpg
     - assets/pension.jpg
     - assets/passport.png
-    - assets/selection.jpg
-    - assets/welcome.jpeg
+
+
+
+  #  Appointment Lanka is a Project Created by Sahansa Jayawardhana (Hapuarachchige Jayawardhana 10818147 - PLY10)  
 
 
   #   - images/a_dot_ham.jpeg

@@ -1,4 +1,7 @@
 import 'package:AppointmentsbySahansa/screens/Admin/AdminNICScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Admin/AdminOnGoingScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Admin/AdminOnGoingScreen.dart';
+import 'package:AppointmentsbySahansa/screens/ProfileScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +11,7 @@ import 'package:AppointmentsbySahansa/screens/Instructions/LicenseInstructions.d
 import 'package:AppointmentsbySahansa/screens/LicenseScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Instructions/NICInstructions.dart';
 import 'package:AppointmentsbySahansa/screens/NICScreen.dart';
-import 'package:AppointmentsbySahansa/screens/Officer/OfficerOnGoingScreen.dart';
+
 import 'package:AppointmentsbySahansa/screens/User/OnGoingScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Instructions/PassportInstructions.dart';
 import 'package:AppointmentsbySahansa/screens/PassportScreen.dart';
@@ -32,7 +35,7 @@ class MyApp extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return HomeScreen();
+              return AdminHomeScreen();
             } else {
               return const LoginScreen();
             }
@@ -152,22 +155,31 @@ class HeaderSection extends StatelessWidget {
           children: [
             Padding(
               padding: EdgeInsets.only(
-                  left: 20), // Increase left padding for the notification icon
+                  left:
+                      20), // increIncrease left padding for the notification icon
               child: IconButton(
                 icon: Icon(Icons.notifications, color: Colors.white),
                 onPressed: () {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => OfficerOngoingScreen()),
-                  );
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AdminOngoingScreen(),
+                      ));
                   // Handle notification icon press here
                 },
               ),
             ),
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: AssetImage('assets/officer_avatar.png'),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                );
+              },
+              child: CircleAvatar(
+                radius: 30,
+                backgroundImage: AssetImage('assets/officer_avatar.png'),
+              ),
             ),
             Padding(
               padding: EdgeInsets.only(
@@ -351,7 +363,7 @@ class MakeAppointmentSection extends StatelessWidget {
                                 case 'Pension':
                                   return PensionInstructions();
                                 default:
-                                  return AdminNICScreen(); // You might want to create a generic error screen
+                                  return AdminNICScreen(); // MENNA METHANA ERROR EKAK ENAWA..ALWAYS YANNEMA ME DEFAULT EKA WTHRI..PASSPORT ANITH EWATA GANNA AMARUI.
                               }
                             },
                           ),

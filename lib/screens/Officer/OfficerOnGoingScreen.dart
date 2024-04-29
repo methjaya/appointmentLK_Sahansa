@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -35,14 +34,6 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
   }
 
   Future<List<Map<String, dynamic>>> fetchAllData() async {
-    var currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
-      throw FirebaseAuthException(
-        code: 'ERROR_NO_USER',
-        message: 'No user logged in',
-      );
-    }
-
     List<String> collections = [
       'LicenseFormData',
       'PensionFormData',
@@ -51,24 +42,23 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
     ];
 
     List<Future<QuerySnapshot>> futures = collections.map((collection) {
-      return FirebaseFirestore.instance
-          .collection(collection)
-          .where('userid', isEqualTo: currentUser.uid)
-          .get();
+      return FirebaseFirestore.instance.collection(collection).get();
     }).toList();
 
     List<QuerySnapshot> snapshots = await Future.wait(futures);
     List<Map<String, dynamic>> data = [];
-    for (var snapshot in snapshots) {
+    for (int i = 0; i < snapshots.length; i++) {
+      var snapshot = snapshots[i];
       for (var doc in snapshot.docs) {
         var docData = doc.data() as Map<String, dynamic>;
         data.add({
+          'collectionName': collections[i],
           'selectedDate': docData['selectedDate'] ?? 'No date',
           'selectedTime': docData['selectedTime'] ?? 'No time',
           'title': docData['title'] ?? 'No title',
           'location': docData['location'] ?? 'No location',
-          'NIC': docData['NIC'] ?? 'No NIC',
-          'phoneNumber': docData['phoneNumber'] ?? 'No phone'
+          'NIC': docData['nic'] ?? 'No NIC',
+          'phoneNumber': docData['contactNumber'] ?? 'No phone'
         });
       }
     }
@@ -81,7 +71,10 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
     if (query.isNotEmpty) {
       List<Map<String, dynamic>> tmpList = [];
       String filterKey = selectedFilter == 'NIC' ? 'phoneNumber' : 'NIC';
-      for (var appointment in appointments) {
+      for (var appointment in appointments.where(
+        (element) =>
+            element['collectionName'] == selectedFilterType(selectedFilter),
+      )) {
         if ((appointment[filterKey] ?? '').contains(query)) {
           tmpList.add(appointment);
         }
@@ -96,121 +89,133 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
     }
   }
 
+  String selectedFilterType(String filter) {
+    switch (filter) {
+      case 'Passport':
+        return 'PassportFormData';
+      case 'Pension':
+        return 'PensionFormData';
+      case 'License':
+        return 'LicenseFormData';
+      case 'NIC':
+        return 'NICFormData';
+      default:
+        return 'PassportFormData';
+    }
+  }
+
+  void cancelAppointment(int index) {
+    print("Cancelling appointment at index: $index");
+    setState(() {
+      filteredAppointments.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width *
-        0.5; // Responsive width for appointment cards
-
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text('Ongoing Appointments', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 15, 110, 183),
+        title: const Text('Ongoing Appointments',
+            style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color.fromARGB(255, 15, 110, 183),
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/nic.jpg'),
-                fit: BoxFit.cover,
-              ),
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.black.withOpacity(0.5), Colors.transparent],
+      body: Container(
+        decoration: BoxDecoration(
+          image: const DecorationImage(
+            image: AssetImage('assets/nic.jpg'),
+            fit: BoxFit.cover,
+          ),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.black.withOpacity(0.5), Colors.transparent],
+          ),
+        ),
+        child: Column(
+          children: [
+            DropdownButtonHideUnderline(
+              child: Container(
+                padding: EdgeInsets.all(8.0),
+                margin: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width *
+                        0.1), // Padding to center dropdown
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.blue,
+                ),
+                child: DropdownButton<String>(
+                  value: selectedFilter,
+                  isExpanded: true,
+                  icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+                  dropdownColor: Colors.blue,
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedFilter = newValue!;
+                      filterAppointments(searchController.text);
+                    });
+                  },
+                  items: <String>['NIC', 'Passport', 'License', 'Pension']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
-          ),
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    padding: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.blue, // Set the background color here
-                      borderRadius: BorderRadius.circular(
-                          10), // Optional: for rounded corners
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: selectedFilter,
-                        isExpanded: true,
-                        icon: Icon(Icons.arrow_drop_down,
-                            color: Colors
-                                .white), // Optional: customize the dropdown arrow icon
-                        dropdownColor: Colors
-                            .blue, // Optional: changes the dropdown menu's background color
-                        style: TextStyle(
-                          color: Colors.white, // Text color inside the dropdown
-                          fontSize: 16,
-                        ),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedFilter = newValue!;
-                            filterAppointments(searchController.text);
-                          });
-                        },
-                        items: <String>['NIC', 'Passport', 'License', 'Pension']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ],
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width *
+                    0.1, // Padding to center search field
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal:
-                        (MediaQuery.of(context).size.width - width) / 2),
-                child: TextField(
-                  controller: searchController,
-                  onChanged: filterAppointments,
-                  decoration: InputDecoration(
-                    labelText:
-                        'Search by ${selectedFilter == 'NIC' ? 'Phone Number' : 'NIC'}',
-                    suffixIcon: Icon(Icons.search),
-                    fillColor: Colors.white,
-                    filled: true,
-                  ),
+              child: TextField(
+                controller: searchController,
+                onChanged: filterAppointments,
+                decoration: InputDecoration(
+                  labelText:
+                      'Search by ${selectedFilter == 'NIC' ? 'Phone Number' : 'NIC'}',
+                  suffixIcon: Icon(Icons.search),
+                  fillColor: Colors.white,
+                  filled: true,
                 ),
               ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredAppointments.length,
-                  itemBuilder: (context, index) {
-                    Map<String, dynamic> appointment =
-                        filteredAppointments[index];
-                    return Card(
-                      margin: EdgeInsets.all(8),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: filteredAppointments.length,
+                itemBuilder: (context, index) {
+                  Map<String, dynamic> appointment =
+                      filteredAppointments[index];
+                  return Container(
+                    width: MediaQuery.of(context).size.width *
+                        0.8, // Card width 80% of screen
+                    constraints: BoxConstraints(
+                        maxWidth: 600), // Max width for larger screens
+                    margin: EdgeInsets.all(10),
+                    child: Card(
                       color: Colors.white.withOpacity(0.85),
-                      child: Container(
-                        width: width,
-                        child: ListTile(
-                          title: Text(appointment['title'],
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 15, 110, 183))),
-                          subtitle: Text(
-                              '${appointment['selectedDate']} at ${appointment['selectedTime']}\nLocation: ${appointment['location']}\nNIC: ${appointment['NIC']}\nPhone: ${appointment['phoneNumber']}'),
-                          leading: Icon(Icons.event_available,
-                              color: Color.fromARGB(255, 15, 110, 183)),
+                      child: ListTile(
+                        title: Text(appointment['title'],
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 15, 110, 183))),
+                        subtitle: Text(
+                            '${appointment['selectedDate']} at ${appointment['selectedTime']}\nLocation: ${appointment['location']}\nNIC: ${appointment['NIC']}\nPhone: ${appointment['phoneNumber']}'),
+                        leading: Icon(Icons.event_available,
+                            color: Color.fromARGB(255, 15, 110, 183)),
+                        trailing: IconButton(
+                          icon: Icon(Icons.cancel, color: Colors.red),
+                          onPressed: () => cancelAppointment(index),
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
