@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:AppointmentsbySahansa/screens/UserSelectionScreen.dart';
 import 'package:AppointmentsbySahansa/screens/loginScreen.dart';
 
 void main() {
@@ -27,7 +26,7 @@ class WelcomeScreen extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/welcome.jpeg'),
+            image: AssetImage('assets/welcome.png'),
             fit: BoxFit.cover,
           ),
         ),

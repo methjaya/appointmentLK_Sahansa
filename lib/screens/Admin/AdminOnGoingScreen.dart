@@ -111,10 +111,38 @@ class _AdminOngoingScreenState extends State<AdminOngoingScreen> {
   }
 
   void cancelAppointment(int index) {
-    print("Cancelling appointment at index: $index");
-    setState(() {
-      filteredAppointments.removeAt(index);
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors
+              .white, // You can change this if you want a different background color
+          title: Text("Cancel Appointment",
+              style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
+          content: Text("Are you sure you want to cancel this appointment?",
+              style: TextStyle(color: Colors.black)),
+          actions: <Widget>[
+            TextButton(
+              child: Text("No",
+                  style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: Text("Yes",
+                  style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog after action
+                setState(() {
+                  filteredAppointments.removeAt(index);
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

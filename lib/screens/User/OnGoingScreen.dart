@@ -71,10 +71,42 @@ class _OngoingScreenState extends State<OngoingScreen> {
   }
 
   void cancelAppointment(int index) {
-    print("Cancelling appointment at index: $index");
-    setState(() {
-      dataFuture = Future.value(List.from(dataFuture as List)..removeAt(index));
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white, // Optional: change as needed
+          title: Text("Cancel Appointment",
+              style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
+          content: Text("Are you sure you want to cancel this appointment?",
+              style: TextStyle(color: Colors.black)),
+          actions: <Widget>[
+            TextButton(
+              child: Text("No",
+                  style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: Text("Yes",
+                  style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog after action
+                // Handle future completion before modifying the list
+                dataFuture.then((List<Map<String, dynamic>> data) {
+                  setState(() {
+                    var updatedData = List<Map<String, dynamic>>.from(data);
+                    updatedData.removeAt(index);
+                    dataFuture = Future.value(updatedData);
+                  });
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

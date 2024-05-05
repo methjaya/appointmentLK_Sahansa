@@ -1,6 +1,8 @@
+import 'package:AppointmentsbySahansa/screens/Admin/AdminCreateOfficer.dart';
 import 'package:AppointmentsbySahansa/screens/Admin/AdminNICScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Admin/AdminOnGoingScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Admin/AdminOnGoingScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Admin/ReviewOfficerUserScreen.dart';
 import 'package:AppointmentsbySahansa/screens/ProfileScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,15 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:AppointmentsbySahansa/firebase_options.dart';
 import 'package:AppointmentsbySahansa/main.dart';
 import 'package:AppointmentsbySahansa/screens/Instructions/LicenseInstructions.dart';
-import 'package:AppointmentsbySahansa/screens/LicenseScreen.dart';
-import 'package:AppointmentsbySahansa/screens/Instructions/NICInstructions.dart';
-import 'package:AppointmentsbySahansa/screens/NICScreen.dart';
 
-import 'package:AppointmentsbySahansa/screens/User/OnGoingScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Instructions/PassportInstructions.dart';
-import 'package:AppointmentsbySahansa/screens/PassportScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Instructions/PensionInstructions.dart';
-import 'package:AppointmentsbySahansa/screens/PensionScreen.dart';
 import 'package:AppointmentsbySahansa/screens/WelcomeScreen.dart';
 import 'package:AppointmentsbySahansa/screens/loginScreen.dart';
 
@@ -44,6 +40,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// //
 class AdminHomeScreen extends StatefulWidget {
   @override
   _AdminHomeScreen createState() => _AdminHomeScreen();
@@ -93,7 +90,7 @@ class _AdminHomeScreen extends State<AdminHomeScreen> {
                   children: [
                     SizedBox(height: 20),
                     DashboardSection(),
-                    //ServiceSection(),
+                    ManageUsersSection(),
                     AppointmentTitleSection(),
                     MakeAppointmentSection(filteredServices: filteredServices),
                   ],
@@ -101,6 +98,83 @@ class _AdminHomeScreen extends State<AdminHomeScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class ManageUsersSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0),
+          child: Text(
+            'Manage Users',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+            ),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            UserManagementCard(
+              title: 'Create an Office User',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreateUserScreen(),
+                  ),
+                );
+              },
+            ),
+            UserManagementCard(
+              title: 'Review Officer Users',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReviewOfficerUsersScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class UserManagementCard extends StatelessWidget {
+  final String title;
+  final VoidCallback onPressed;
+
+  const UserManagementCard(
+      {Key? key, required this.title, required this.onPressed})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.blue[800],
+        backgroundColor: Colors.white, // Text color
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      onPressed: onPressed,
+      child: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
@@ -144,6 +218,8 @@ class _SearchBarState extends State<SearchBar> {
     );
   }
 }
+
+// //
 
 class HeaderSection extends StatelessWidget {
   @override
