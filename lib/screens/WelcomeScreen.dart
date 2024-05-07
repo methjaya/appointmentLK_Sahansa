@@ -22,11 +22,20 @@ class MyApp extends StatelessWidget {
 class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Determine screen size
+    var size = MediaQuery.of(context).size;
+    // Check if it's a large screen (arbitrarily set at 600 pixels here, adjust as needed)
+    bool isLargeScreen = size.width > 600;
+
+    // Decide which image to use based on the screen width
+    String backgroundImage =
+        isLargeScreen ? 'assets/welcomeWEB.png' : 'assets/welcome.png';
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/welcome.png'),
+            image: AssetImage(backgroundImage),
             fit: BoxFit.cover,
           ),
         ),
@@ -34,32 +43,39 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Spacer(),
+              SizedBox(
+                height: 100,
+              ),
               Text(
-                'Welcome to the Government Services Portal',
+                'Welcome to',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color.fromARGB(255, 34, 39, 129),
                   fontFamily: 'SF Pro Display',
                 ),
               ),
               SizedBox(height: 20),
               Text(
-                'Your one-stop destination for managing all government-related appointments.',
+                'APPOINTMENT LANKA',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white70,
-                  fontFamily: 'SF Pro Text',
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 34, 39, 129),
+                  fontFamily: 'SF Pro Display',
                 ),
               ),
-              Spacer(),
+              SizedBox(
+                height: 50,
+              ),
               CupertinoButton(
-                color: Colors.white,
+                color: Color.fromARGB(255, 34, 39, 129),
                 child: Text('Get Started',
-                    style: TextStyle(color: Colors.blue[800])),
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                    )),
                 onPressed: () {
                   Navigator.push(
                     context,

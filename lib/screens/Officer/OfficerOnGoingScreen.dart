@@ -1,5 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:AppointmentsbySahansa/screens/Officer/OfficerHomeScreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,6 +13,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'APPOINTMENT_APP',
       home: OfficerOngoingScreen(),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
     );
   }
 }
@@ -52,11 +58,11 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
       for (var doc in snapshot.docs) {
         var docData = doc.data() as Map<String, dynamic>;
         data.add({
-          'collectionName': collections[i],
+          'collectionName': collections[i].replaceFirst('FormData', ''),
           'selectedDate': docData['selectedDate'] ?? 'No date',
           'selectedTime': docData['selectedTime'] ?? 'No time',
           'title': docData['title'] ?? 'No title',
-          'location': docData['location'] ?? 'No location',
+          'location': docData['selectedLocation'] ?? 'No location',
           'NIC': docData['nic'] ?? 'No NIC',
           'phoneNumber': docData['contactNumber'] ?? 'No phone'
         });
@@ -64,80 +70,22 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
     }
     appointments = data;
     filteredAppointments = data;
+    updateFilteredAppointments(); // Initial filter based on default selection
     return data;
   }
 
-  void filterAppointments(String query) {
-    if (query.isNotEmpty) {
-      List<Map<String, dynamic>> tmpList = [];
-      String filterKey = selectedFilter == 'NIC' ? 'phoneNumber' : 'NIC';
-      for (var appointment in appointments.where(
-        (element) =>
-            element['collectionName'] == selectedFilterType(selectedFilter),
-      )) {
-        if ((appointment[filterKey] ?? '').contains(query)) {
-          tmpList.add(appointment);
-        }
-      }
-      setState(() {
-        filteredAppointments = tmpList;
-      });
-    } else {
-      setState(() {
-        filteredAppointments = appointments;
-      });
-    }
-  }
-
-  String selectedFilterType(String filter) {
-    switch (filter) {
-      case 'Passport':
-        return 'PassportFormData';
-      case 'Pension':
-        return 'PensionFormData';
-      case 'License':
-        return 'LicenseFormData';
-      case 'NIC':
-        return 'NICFormData';
-      default:
-        return 'PassportFormData';
-    }
-  }
-
-  void cancelAppointment(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors
-              .white, // You can change this if you want a different background color
-          title: Text("Cancel Appointment",
-              style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
-          content: Text("Are you sure you want to cancel this appointment?",
-              style: TextStyle(color: Colors.black)),
-          actions: <Widget>[
-            TextButton(
-              child: Text("No",
-                  style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-            TextButton(
-              child: Text("Yes",
-                  style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
-              onPressed: () {
-                // Proceed with cancellation
-                setState(() {
-                  filteredAppointments.removeAt(index);
-                  Navigator.of(context).pop(); // Close the dialog after action
-                });
-              },
-            ),
-          ],
-        );
-      },
-    );
+  void updateFilteredAppointments() {
+    String query = searchController.text.toLowerCase();
+    setState(() {
+      filteredAppointments = appointments.where((appointment) {
+        bool matchesFilter =
+            appointment['collectionName'].toString().contains(selectedFilter);
+        bool matchesSearch =
+            appointment['title'].toString().toLowerCase().contains(query) ||
+                appointment['NIC'].toString().toLowerCase().contains(query);
+        return matchesFilter && matchesSearch;
+      }).toList();
+    });
   }
 
   @override
@@ -147,6 +95,13 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
         title: const Text('Ongoing Appointments',
             style: TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromARGB(255, 15, 110, 183),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.push(
+            context,
+            CupertinoPageRoute(builder: (context) => OfficerHomeScreen()),
+          ),
+        ),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -166,8 +121,7 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
               child: Container(
                 padding: EdgeInsets.all(8.0),
                 margin: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width *
-                        0.1), // Padding to center dropdown
+                    horizontal: MediaQuery.of(context).size.width * 0.1),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.blue,
@@ -181,8 +135,8 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
                   onChanged: (String? newValue) {
                     setState(() {
                       selectedFilter = newValue!;
-                      filterAppointments(searchController.text);
                     });
+                    updateFilteredAppointments();
                   },
                   items: <String>['NIC', 'Passport', 'License', 'Pension']
                       .map<DropdownMenuItem<String>>((String value) {
@@ -196,15 +150,12 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
             ),
             Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width *
-                    0.1, // Padding to center search field
-              ),
+                  horizontal: MediaQuery.of(context).size.width * 0.1),
               child: TextField(
                 controller: searchController,
-                onChanged: filterAppointments,
+                onChanged: (text) => updateFilteredAppointments(),
                 decoration: InputDecoration(
-                  labelText:
-                      'Search by ${selectedFilter == 'NIC' ? 'Phone Number' : 'NIC'}',
+                  labelText: 'Search',
                   suffixIcon: Icon(Icons.search),
                   fillColor: Colors.white,
                   filled: true,
@@ -218,10 +169,8 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
                   Map<String, dynamic> appointment =
                       filteredAppointments[index];
                   return Container(
-                    width: MediaQuery.of(context).size.width *
-                        0.8, // Card width 80% of screen
-                    constraints: BoxConstraints(
-                        maxWidth: 600), // Max width for larger screens
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    constraints: BoxConstraints(maxWidth: 600),
                     margin: EdgeInsets.all(10),
                     child: Card(
                       color: Colors.white.withOpacity(0.85),
@@ -230,13 +179,9 @@ class _OfficerOngoingScreenState extends State<OfficerOngoingScreen> {
                             style: TextStyle(
                                 color: Color.fromARGB(255, 15, 110, 183))),
                         subtitle: Text(
-                            '${appointment['selectedDate']} at ${appointment['selectedTime']}\nLocation: ${appointment['location']}\nNIC: ${appointment['NIC']}\nPhone: ${appointment['phoneNumber']}'),
+                            '${appointment['selectedDate']} at ${appointment['selectedTime']}\nLocation: ${appointment['location']}\nNIC: ${appointment['NIC']}'),
                         leading: Icon(Icons.event_available,
                             color: Color.fromARGB(255, 15, 110, 183)),
-                        trailing: IconButton(
-                          icon: Icon(Icons.cancel, color: Colors.red),
-                          onPressed: () => cancelAppointment(index),
-                        ),
                       ),
                     ),
                   );
