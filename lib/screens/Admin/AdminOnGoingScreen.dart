@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:AppointmentsbySahansa/screens/Officer/OfficerHomeScreen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(MyApp());
@@ -88,6 +89,43 @@ class _AdminOngoingScreenState extends State<AdminOngoingScreen> {
     });
   }
 
+  void launchMapsUrl(String address) async {
+    var url = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  void cancelAppointment(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Cancel Appointment"),
+          content: Text("Are you sure you want to cancel this appointment?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("No"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: Text("Yes"),
+              onPressed: () {
+                setState(() {
+                  filteredAppointments.removeAt(index);
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,10 +135,8 @@ class _AdminOngoingScreenState extends State<AdminOngoingScreen> {
         backgroundColor: const Color.fromARGB(255, 15, 110, 183),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.push(
-            context,
-            CupertinoPageRoute(builder: (context) => OfficerHomeScreen()),
-          ),
+          onPressed: () => Navigator.push(context,
+              CupertinoPageRoute(builder: (context) => OfficerHomeScreen())),
         ),
       ),
       body: Container(
@@ -182,6 +218,20 @@ class _AdminOngoingScreenState extends State<AdminOngoingScreen> {
                             '${appointment['selectedDate']} at ${appointment['selectedTime']}\nLocation: ${appointment['location']}\nNIC: ${appointment['NIC']}'),
                         leading: Icon(Icons.event_available,
                             color: Color.fromARGB(255, 15, 110, 183)),
+                        trailing: Wrap(
+                          spacing: 12, // space between two icons
+                          children: <Widget>[
+                            IconButton(
+                              icon: Icon(Icons.map, color: Colors.green),
+                              onPressed: () =>
+                                  launchMapsUrl(appointment['location']),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => cancelAppointment(index),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

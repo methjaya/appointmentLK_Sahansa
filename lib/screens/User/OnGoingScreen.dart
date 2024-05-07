@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(MyApp());
@@ -70,6 +71,16 @@ class _OngoingScreenState extends State<OngoingScreen> {
     return data;
   }
 
+  void launchMapsUrl(String address) async {
+    var url = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   void cancelAppointment(int index) {
     showDialog(
       context: context,
@@ -84,16 +95,13 @@ class _OngoingScreenState extends State<OngoingScreen> {
             TextButton(
               child: Text("No",
                   style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
               child: Text("Yes",
                   style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog after action
-                // Handle future completion before modifying the list
+                Navigator.of(context).pop();
                 dataFuture.then((List<Map<String, dynamic>> data) {
                   setState(() {
                     var updatedData = List<Map<String, dynamic>>.from(data);
@@ -158,9 +166,19 @@ class _OngoingScreenState extends State<OngoingScreen> {
                                 '${appointment['selectedDate']} at ${appointment['selectedTime']}\nLocation: ${appointment['location']}'),
                             leading: Icon(Icons.event_available,
                                 color: Color.fromARGB(255, 15, 110, 183)),
-                            trailing: IconButton(
-                              icon: Icon(Icons.cancel, color: Colors.red),
-                              onPressed: () => cancelAppointment(idx),
+                            trailing: Wrap(
+                              spacing: 12, // space between two icons
+                              children: <Widget>[
+                                IconButton(
+                                  icon: Icon(Icons.map, color: Colors.green),
+                                  onPressed: () =>
+                                      launchMapsUrl(appointment['location']),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.cancel, color: Colors.red),
+                                  onPressed: () => cancelAppointment(idx),
+                                ),
+                              ],
                             ),
                           ),
                         ),
