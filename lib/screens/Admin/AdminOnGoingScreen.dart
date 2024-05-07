@@ -1,12 +1,9 @@
+import 'package:AppointmentsbySahansa/screens/Admin/AdminHomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:AppointmentsbySahansa/screens/Officer/OfficerHomeScreen.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-void main() {
-  runApp(MyApp());
-}
 
 class MyApp extends StatelessWidget {
   @override
@@ -136,7 +133,7 @@ class _AdminOngoingScreenState extends State<AdminOngoingScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.push(context,
-              CupertinoPageRoute(builder: (context) => OfficerHomeScreen())),
+              CupertinoPageRoute(builder: (context) => AdminHomeScreen())),
         ),
       ),
       body: Container(

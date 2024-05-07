@@ -120,32 +120,37 @@ class ManageUsersSection extends StatelessWidget {
             ),
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            UserManagementCard(
-              title: 'Create an Office User',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CreateUserScreen(),
-                  ),
-                );
-              },
-            ),
-            UserManagementCard(
-              title: 'Review Officer Users',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ReviewOfficerUsersScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
+        SingleChildScrollView(
+          scrollDirection:
+              Axis.horizontal, // Set scroll direction to horizontal
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              UserManagementCard(
+                title: 'Create an Office User',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreateUserScreen(),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(width: 20), // Space between cards
+              UserManagementCard(
+                title: 'Review Officer Users',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReviewOfficerUsersScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ],
     );

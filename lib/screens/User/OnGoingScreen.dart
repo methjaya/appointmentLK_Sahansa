@@ -146,45 +146,42 @@ class _OngoingScreenState extends State<OngoingScreen> {
               } else if (snapshot.hasError) {
                 return Text("Error: ${snapshot.error}");
               } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                return SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: snapshot.data!.asMap().entries.map((entry) {
-                      int idx = entry.key;
-                      Map<String, dynamic> appointment = entry.value;
-                      return Container(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        constraints: BoxConstraints(maxWidth: 600),
-                        margin: EdgeInsets.all(10),
-                        child: Card(
-                          color: Colors.white.withOpacity(0.85),
-                          child: ListTile(
-                            title: Text(appointment['title'],
-                                style: TextStyle(
-                                    color: Color.fromARGB(255, 15, 110, 183))),
-                            subtitle: Text(
-                                '${appointment['selectedDate']} at ${appointment['selectedTime']}\nLocation: ${appointment['location']}'),
-                            leading: Icon(Icons.event_available,
-                                color: Color.fromARGB(255, 15, 110, 183)),
-                            trailing: Wrap(
-                              spacing: 12, // space between two icons
-                              children: <Widget>[
-                                IconButton(
-                                  icon: Icon(Icons.map, color: Colors.green),
-                                  onPressed: () =>
-                                      launchMapsUrl(appointment['location']),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.cancel, color: Colors.red),
-                                  onPressed: () => cancelAppointment(idx),
-                                ),
-                              ],
-                            ),
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    var appointment = snapshot.data![index];
+                    return Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      constraints: BoxConstraints(maxWidth: 600),
+                      margin: EdgeInsets.all(10),
+                      child: Card(
+                        color: Colors.white.withOpacity(0.85),
+                        child: ListTile(
+                          title: Text(appointment['title'],
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 15, 110, 183))),
+                          subtitle: Text(
+                              '${appointment['selectedDate']} at ${appointment['selectedTime']}\nLocation: ${appointment['location']}'),
+                          leading: Icon(Icons.event_available,
+                              color: Color.fromARGB(255, 15, 110, 183)),
+                          trailing: Wrap(
+                            spacing: 12, // space between two icons
+                            children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.map, color: Colors.green),
+                                onPressed: () =>
+                                    launchMapsUrl(appointment['location']),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.cancel, color: Colors.red),
+                                onPressed: () => cancelAppointment(index),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    }).toList(),
-                  ),
+                      ),
+                    );
+                  },
                 );
               } else {
                 return Text("No appointments found");
