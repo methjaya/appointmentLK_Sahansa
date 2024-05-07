@@ -62,7 +62,7 @@ class _OngoingScreenState extends State<OngoingScreen> {
           'selectedDate': docData['selectedDate'] ?? 'No date',
           'selectedTime': docData['selectedTime'] ?? 'No time',
           'title': docData['title'] ?? 'No title',
-          'location': docData['location'] ?? 'No location'
+          'location': docData['selectedLocation'] ?? 'No location'
         });
       }
     }
