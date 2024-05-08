@@ -1,21 +1,26 @@
-import 'package:AppointmentsbySahansa/screens/Admin/AdminHomeScreen.dart';
-import 'package:AppointmentsbySahansa/screens/Admin/AdminNICScreen.dart';
-import 'package:AppointmentsbySahansa/screens/Admin/AdminOnGoingScreen.dart';
-import 'package:AppointmentsbySahansa/screens/Admin/AdminOnGoingScreen.dart';
-import 'package:AppointmentsbySahansa/screens/ProfileScreen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'package:AppointmentsbySahansa/firebase_options.dart';
-import 'package:AppointmentsbySahansa/main.dart';
-import 'package:AppointmentsbySahansa/screens/Instructions/LicenseInstructions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:AppointmentsbySahansa/screens/Instructions/PassportInstructions.dart';
-import 'package:AppointmentsbySahansa/screens/Instructions/PensionInstructions.dart';
-import 'package:AppointmentsbySahansa/screens/WelcomeScreen.dart';
-import 'package:AppointmentsbySahansa/screens/loginScreen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'User Management',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: ReviewOfficerUsersScreen(),
+    );
+  }
+}
 
 class ReviewOfficerUsersScreen extends StatefulWidget {
   @override
@@ -24,78 +29,25 @@ class ReviewOfficerUsersScreen extends StatefulWidget {
 }
 
 class _ReviewOfficerUsersScreenState extends State<ReviewOfficerUsersScreen> {
-  List<Map<String, String>> users = [
-    {'name': 'John Doe', 'email': 'john.doe@example.com'},
-    {'name': 'Jane Smith', 'email': 'jane.smith@example.com'},
-    {'name': 'Alice Johnson', 'email': 'alice.johnson@example.com'},
-  ];
+  final TextEditingController _searchController = TextEditingController();
 
-  String searchQuery = '';
-
-  void showEditDialog(Map<String, String> user) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Edit Officer User",
-              style: TextStyle(color: Colors.blue[800])),
-          content: UserEditForm(user: user),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void deleteUser(Map<String, String> user) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirm Delete'),
-          content: Text('Are you sure you want to delete this user?'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel', style: TextStyle(color: Colors.blue[800])),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: Text('Delete', style: TextStyle(color: Colors.red)),
-              onPressed: () {
-                setState(() {
-                  users.removeWhere((u) => u['email'] == user['email']);
-                  Navigator.of(context).pop();
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("User deleted successfully!"),
-                    duration: Duration(seconds: 5),
-                  ),
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
+  Stream<List<Map<String, dynamic>>> getUsersStream() {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => {
+                  'id': doc.id,
+                  'name':
+                      '${doc.data()['firstName'] ?? ''} ${doc.data()['lastName'] ?? ''}'
+                          .trim(),
+                  'email': doc.data()['email'] ?? 'No email'
+                })
+            .toList());
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, String>> filteredUsers = users
-        .where((user) =>
-            user['name']!.toLowerCase().contains(searchQuery.toLowerCase()) ||
-            user['email']!.toLowerCase().contains(searchQuery.toLowerCase()))
-        .toList();
-
-    double maxWidth = MediaQuery.of(context).size.width > 600
-        ? 600
-        : MediaQuery.of(context).size.width * 0.9;
-
     return Scaffold(
       appBar: AppBar(
         title:
@@ -110,105 +62,163 @@ class _ReviewOfficerUsersScreenState extends State<ReviewOfficerUsersScreen> {
             end: Alignment.bottomRight,
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: maxWidth),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          searchQuery = value;
-                        });
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Search',
-                        fillColor: Colors.white,
-                        filled: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        prefixIcon: Icon(Icons.search, color: Colors.blue[800]),
-                      ),
-                    ),
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(16.0),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (value) => setState(() {}),
+                decoration: InputDecoration(
+                  labelText: 'Search',
+                  fillColor: Colors.white,
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
                   ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                  prefixIcon: Icon(Icons.search, color: Colors.blue[800]),
+                ),
+              ),
+            ),
+            Expanded(
+              child: StreamBuilder<List<Map<String, dynamic>>>(
+                stream: getUsersStream(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(
+                        child: Text('No users found',
+                            style: TextStyle(color: Colors.white)));
+                  }
+                  var filteredUsers = snapshot.data!
+                      .where((user) =>
+                          user['name']
+                              .toLowerCase()
+                              .contains(_searchController.text.toLowerCase()) ||
+                          user['email']
+                              .toLowerCase()
+                              .contains(_searchController.text.toLowerCase()))
+                      .toList();
+                  return ListView.builder(
                     itemCount: filteredUsers.length,
                     itemBuilder: (context, index) {
                       return Card(
-                        margin: EdgeInsets.all(8),
+                        color: Colors.white,
                         child: ListTile(
-                          title: Text(filteredUsers[index]['name']!),
-                          subtitle: Text(filteredUsers[index]['email']!),
-                          leading: Icon(Icons.person, color: Colors.blue[800]),
-                          onTap: () => showEditDialog(filteredUsers[index]),
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => deleteUser(filteredUsers[index]),
+                          title: Text(filteredUsers[index]['name'],
+                              style: TextStyle(color: Colors.blue[800])),
+                          subtitle: Text(filteredUsers[index]['email'],
+                              style: TextStyle(color: Colors.black)),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit, color: Colors.green),
+                                onPressed: () =>
+                                    showEditDialog(filteredUsers[index]),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () =>
+                                    confirmDeleteDialog(filteredUsers[index]),
+                              ),
+                            ],
                           ),
                         ),
                       );
                     },
-                  ),
-                ],
+                  );
+                },
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
-}
 
-// UserEditForm widget definition
-class UserEditForm extends StatefulWidget {
-  final Map<String, String> user;
+  void showEditDialog(Map<String, dynamic> user) {
+    TextEditingController nameController =
+        TextEditingController(text: user['name']);
+    TextEditingController emailController =
+        TextEditingController(text: user['email']);
 
-  UserEditForm({Key? key, required this.user}) : super(key: key);
-
-  @override
-  _UserEditFormState createState() => _UserEditFormState();
-}
-
-class _UserEditFormState extends State<UserEditForm> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController.text = widget.user['name']!;
-    _emailController.text = widget.user['email']!;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Edit User"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(labelText: 'Name'),
+              ),
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel', style: TextStyle(color: Colors.red)),
+            ),
+            TextButton(
+              onPressed: () {
+                updateUser(
+                    user['id'], nameController.text, emailController.text);
+                Navigator.of(context).pop();
+              },
+              child:
+                  Text('Save Changes', style: TextStyle(color: Colors.green)),
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        TextField(
-          controller: _nameController,
-          decoration: InputDecoration(labelText: 'Name'),
-        ),
-        TextField(
-          controller: _emailController,
-          decoration: InputDecoration(labelText: 'Email'),
-        ),
-        SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {
-            // Logic to save user details
-            Navigator.of(context).pop(); // Close the dialog
-          },
-          child: Text('Save Changes'),
-        ),
-      ],
+  void updateUser(String userId, String name, String email) {
+    var names = name.split(' ');
+    FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'firstName': names.first,
+      'lastName': names.length > 1 ? names.sublist(1).join(' ') : '',
+      'email': email
+    });
+  }
+
+  void confirmDeleteDialog(Map<String, dynamic> user) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Delete'),
+          content: Text('Are you sure you want to delete this user?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel', style: TextStyle(color: Colors.blue[800])),
+            ),
+            TextButton(
+              onPressed: () {
+                deleteUser(user['id']);
+                Navigator.of(context).pop();
+              },
+              child: Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
     );
+  }
+
+  void deleteUser(String userId) {
+    FirebaseFirestore.instance.collection('users').doc(userId).delete();
   }
 }
