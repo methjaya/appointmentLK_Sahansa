@@ -16,6 +16,8 @@ import 'package:AppointmentsbySahansa/screens/Instructions/PensionInstructions.d
 import 'package:AppointmentsbySahansa/screens/WelcomeScreen.dart';
 import 'package:AppointmentsbySahansa/screens/loginScreen.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -300,27 +302,77 @@ class HeaderSection extends StatelessWidget {
   }
 }
 
-class DashboardSection extends StatelessWidget {
+class DashboardSection extends StatefulWidget {
+  @override
+  _DashboardSectionState createState() => _DashboardSectionState();
+}
+
+class _DashboardSectionState extends State<DashboardSection> {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Future<Map<String, dynamic>> fetchData() async {
+    Map<String, dynamic> data = {};
+
+    // Fetching total user count
+    var usersSnapshot = await firestore.collection('users').get();
+    data['Total Users'] = usersSnapshot.docs.length.toString();
+
+    // Fetching NIC bookings
+    var nicSnapshot = await firestore.collection('NICFormData').get();
+    data['NIC Bookings'] = nicSnapshot.docs.length.toString();
+
+    // Fetching Passport bookings
+    var passportSnapshot = await firestore.collection('PassportFormData').get();
+    data['Passport Bookings'] = passportSnapshot.docs.length.toString();
+
+    // Fetching License bookings
+    var licenseSnapshot = await firestore.collection('LicenseFormData').get();
+    data['License Bookings'] = licenseSnapshot.docs.length.toString();
+
+    // Fetching Pension bookings
+    var pensionSnapshot = await firestore.collection('PensionFormData').get();
+    data['Pension Bookings'] = pensionSnapshot.docs.length.toString();
+
+    return data;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 10, left: 20),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            DashboardCard(title: 'Total Users', value: '1,234'),
-            SizedBox(width: 20),
-            DashboardCard(title: 'NIC Bookings', value: '340'),
-            SizedBox(width: 20),
-            DashboardCard(title: 'Passport Bookings', value: '212'),
-            SizedBox(width: 20),
-            DashboardCard(title: 'License Bookings', value: '89'),
-            SizedBox(width: 20),
-            DashboardCard(title: 'Pension Bookings', value: '58'),
-          ],
-        ),
+      child: FutureBuilder<Map<String, dynamic>>(
+        future: fetchData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          }
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          var data = snapshot.data!;
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                DashboardCard(title: 'Total Users', value: data['Total Users']),
+                SizedBox(width: 20),
+                DashboardCard(
+                    title: 'NIC Bookings', value: data['NIC Bookings']),
+                SizedBox(width: 20),
+                DashboardCard(
+                    title: 'Passport Bookings',
+                    value: data['Passport Bookings']),
+                SizedBox(width: 20),
+                DashboardCard(
+                    title: 'License Bookings', value: data['License Bookings']),
+                SizedBox(width: 20),
+                DashboardCard(
+                    title: 'Pension Bookings', value: data['Pension Bookings']),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
