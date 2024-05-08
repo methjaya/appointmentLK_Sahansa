@@ -1,7 +1,6 @@
 import 'package:AppointmentsbySahansa/screens/Admin/AdminCreateOfficer.dart';
 import 'package:AppointmentsbySahansa/screens/Admin/AdminNICScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Admin/AdminOnGoingScreen.dart';
-import 'package:AppointmentsbySahansa/screens/Admin/AdminOnGoingScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Admin/ReviewOfficerUserScreen.dart';
 import 'package:AppointmentsbySahansa/screens/ProfileScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,12 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:AppointmentsbySahansa/firebase_options.dart';
 import 'package:AppointmentsbySahansa/main.dart';
 import 'package:AppointmentsbySahansa/screens/Instructions/LicenseInstructions.dart';
-
 import 'package:AppointmentsbySahansa/screens/Instructions/PassportInstructions.dart';
 import 'package:AppointmentsbySahansa/screens/Instructions/PensionInstructions.dart';
 import 'package:AppointmentsbySahansa/screens/WelcomeScreen.dart';
 import 'package:AppointmentsbySahansa/screens/loginScreen.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<void> main() async {
@@ -94,7 +91,7 @@ class _AdminHomeScreen extends State<AdminHomeScreen> {
                     DashboardSection(),
                     ManageUsersSection(),
                     AppointmentTitleSection(),
-                    MakeAppointmentSection(filteredServices: filteredServices),
+                    MakeAppointmentSection(),
                   ],
                 ),
               ),
@@ -432,7 +429,7 @@ class AppointmentTitleSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
       child: Text(
-        'View the Appointments',
+        'Review Appointments',
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
@@ -444,110 +441,65 @@ class AppointmentTitleSection extends StatelessWidget {
 }
 
 class MakeAppointmentSection extends StatelessWidget {
-  final List<Map<String, dynamic>> filteredServices;
-
-  const MakeAppointmentSection({Key? key, required this.filteredServices})
-      : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double cardSize = screenWidth > 800 ? screenWidth * 0.3 : screenWidth * 0.5;
     double maxWidth = screenWidth * 0.9;
-    final ScrollController scrollController = ScrollController();
 
     return Expanded(
       child: Center(
         child: Container(
           constraints: BoxConstraints(maxWidth: maxWidth),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment:
+                MainAxisAlignment.center, // Align card in the center
             children: [
-              IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                onPressed: () {
-                  scrollController.animateTo(
-                    scrollController.offset - cardSize,
-                    curve: Curves.easeInOut,
-                    duration: Duration(milliseconds: 300),
+              GestureDetector(
+                // Gesture detector to handle the tap on the card,
+                onTap: () {
+                  // Navigate to AdminOngoingScreen when the card is tapped
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AdminOngoingScreen()),
                   );
                 },
-              ),
-              Expanded(
-                child: ListView.builder(
-                  controller: scrollController,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: filteredServices.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        // Navigation logic based on service type
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              switch (filteredServices[index]['type']) {
-                                case 'NIC':
-                                  return AdminNICScreen(); // Or NICScreen if it's more appropriate
-                                case 'Passport':
-                                  return PassportInstructions();
-                                case 'License':
-                                  return LicenseInstructions();
-                                case 'Pension':
-                                  return PensionInstructions();
-                                default:
-                                  return AdminNICScreen(); // MENNA METHANA ERROR EKAK ENAWA..ALWAYS YANNEMA ME DEFAULT EKA WTHRI..PASSPORT ANITH EWATA GANNA AMARUI.
-                              }
-                            },
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: cardSize,
-                        margin: EdgeInsets.symmetric(horizontal: 8),
-                        child: Card(
-                          clipBehavior: Clip.antiAlias,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: [
-                              Ink.image(
-                                image: AssetImage(
-                                    filteredServices[index]['image']),
-                                fit: BoxFit.cover,
-                                height: double.infinity,
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(10),
-                                color: Colors.black.withOpacity(0.5),
-                                child: Text(
-                                  filteredServices[index]['name'],
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
+                child: Container(
+                  width: cardSize,
+                  margin: EdgeInsets.symmetric(horizontal: 8),
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Ink.image(
+                          image: AssetImage(
+                              'assets/nic.jpg'), // Replace with an appropriate image asset
+                          fit: BoxFit.cover,
+                          height: double.infinity,
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          color: Colors.black.withOpacity(0.5),
+                          child: Text(
+                            'Click to Select',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize:
+                                  16, // Adjusted font size for better visibility
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              IconButton(
-                icon: Icon(Icons.arrow_forward_ios, color: Colors.white),
-                onPressed: () {
-                  scrollController.animateTo(
-                    scrollController.offset + cardSize,
-                    curve: Curves.easeInOut,
-                    duration: Duration(milliseconds: 300),
-                  );
-                },
               ),
             ],
           ),
