@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:AppointmentsbySahansa/firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<void> main() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -16,6 +15,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'APPOINTMENT_APP',
       home: CreateUserScreen(),
+      theme: ThemeData(
+        primaryColor: Colors.blue[800], // Set primary color to blue
+        hintColor: Colors.blue[800], // Set accent color to blue
+        backgroundColor: Colors.white, // Set background color to white
+        scaffoldBackgroundColor:
+            Colors.white, // Set scaffold background color to white
+      ),
     );
   }
 }
@@ -27,17 +33,73 @@ class CreateUserScreen extends StatefulWidget {
 
 class _CreateUserScreenState extends State<CreateUserScreen> {
   final _formKey = GlobalKey<FormState>();
-  String _name = '';
+  String _firstName = '';
+  String _lastName = '';
   String _email = '';
   String _password = '';
   String _confirmPassword = '';
 
-  void _trySubmitForm() {
+  void _trySubmitForm() async {
     final isValid = _formKey.currentState?.validate();
     if (isValid != null && isValid) {
       _formKey.currentState?.save();
-      print('Name: $_name, Email: $_email, Password: $_password');
-      // Implement your user creation logic here
+      try {
+        // Check if passwords match
+        if (_password != _confirmPassword) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Passwords do not match'),
+            ),
+          );
+          return;
+        }
+
+        // Create user with email and password
+        UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _email,
+          password: _password,
+        );
+
+        // Add user details to Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'firstName': _firstName,
+          'lastName': _lastName,
+          'email': _email,
+        });
+
+        // Show success message
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Success',
+                  style: TextStyle(
+                      color: Colors.blue[800])), // Set title color to blue
+              content: Text('User created successfully',
+                  style: TextStyle(
+                      color: Colors.blue[800])), // Set content color to blue
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK',
+                      style: TextStyle(
+                          color: Colors
+                              .blue[800])), // Set button text color to blue
+                ),
+              ],
+              backgroundColor: Colors.white, // Set background color to white
+            );
+          },
+        );
+      } catch (error) {
+        print('Failed to create user: $error');
+      }
     }
   }
 
@@ -48,8 +110,10 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create New Officer User',
-            style: TextStyle(color: Colors.white)),
+        title: Text(
+          'Create New Officer User',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.blue[800],
         iconTheme: IconThemeData(color: Colors.white),
       ),
@@ -74,15 +138,16 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                       width: fieldWidth,
                       child: TextFormField(
                         decoration: InputDecoration(
-                            labelText: 'Name',
-                            fillColor: Colors.white,
-                            filled: true),
+                          labelText: 'First Name',
+                          fillColor: Colors.white,
+                          filled: true,
+                        ),
                         onSaved: (value) {
-                          _name = value ?? '';
+                          _firstName = value ?? '';
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter a name';
+                            return 'Please enter your first name';
                           }
                           return null;
                         },
@@ -93,9 +158,30 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                       width: fieldWidth,
                       child: TextFormField(
                         decoration: InputDecoration(
-                            labelText: 'Email',
-                            fillColor: Colors.white,
-                            filled: true),
+                          labelText: 'Last Name',
+                          fillColor: Colors.white,
+                          filled: true,
+                        ),
+                        onSaved: (value) {
+                          _lastName = value ?? '';
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your last name';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      width: fieldWidth,
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          fillColor: Colors.white,
+                          filled: true,
+                        ),
                         keyboardType: TextInputType.emailAddress,
                         onSaved: (value) {
                           _email = value ?? '';
@@ -115,12 +201,13 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                       width: fieldWidth,
                       child: TextFormField(
                         decoration: InputDecoration(
-                            labelText: 'Password',
-                            fillColor: Colors.white,
-                            filled: true),
+                          labelText: 'Password',
+                          fillColor: Colors.white,
+                          filled: true,
+                        ),
                         obscureText: true,
-                        onSaved: (value) {
-                          _password = value ?? '';
+                        onChanged: (value) {
+                          _password = value;
                         },
                         validator: (value) {
                           if (value == null ||
@@ -137,12 +224,13 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                       width: fieldWidth,
                       child: TextFormField(
                         decoration: InputDecoration(
-                            labelText: 'Confirm Password',
-                            fillColor: Colors.white,
-                            filled: true),
+                          labelText: 'Confirm Password',
+                          fillColor: Colors.white,
+                          filled: true,
+                        ),
                         obscureText: true,
-                        onSaved: (value) {
-                          _confirmPassword = value ?? '';
+                        onChanged: (value) {
+                          _confirmPassword = value;
                         },
                         validator: (value) {
                           if (value != _password) {

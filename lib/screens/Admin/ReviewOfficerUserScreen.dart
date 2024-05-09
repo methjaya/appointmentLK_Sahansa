@@ -14,9 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'User Management',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: ReviewOfficerUsersScreen(),
     );
   }
@@ -41,7 +39,7 @@ class _ReviewOfficerUsersScreenState extends State<ReviewOfficerUsersScreen> {
                   'name':
                       '${doc.data()['firstName'] ?? ''} ${doc.data()['lastName'] ?? ''}'
                           .trim(),
-                  'email': doc.data()['email'] ?? 'No email'
+                  'email': doc.data()['email'] ?? 'No email provided'
                 })
             .toList());
   }
@@ -66,18 +64,25 @@ class _ReviewOfficerUsersScreenState extends State<ReviewOfficerUsersScreen> {
           children: [
             Padding(
               padding: EdgeInsets.all(16.0),
-              child: TextField(
-                controller: _searchController,
-                onChanged: (value) => setState(() {}),
-                decoration: InputDecoration(
-                  labelText: 'Search',
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
+              child: Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width > 600
+                      ? 400
+                      : double.infinity,
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) => setState(() {}),
+                    decoration: InputDecoration(
+                      labelText: 'Search',
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      prefixIcon: Icon(Icons.search, color: Colors.blue[800]),
+                    ),
                   ),
-                  prefixIcon: Icon(Icons.search, color: Colors.blue[800]),
                 ),
               ),
             ),
@@ -105,27 +110,47 @@ class _ReviewOfficerUsersScreenState extends State<ReviewOfficerUsersScreen> {
                   return ListView.builder(
                     itemCount: filteredUsers.length,
                     itemBuilder: (context, index) {
-                      return Card(
-                        color: Colors.white,
-                        child: ListTile(
-                          title: Text(filteredUsers[index]['name'],
-                              style: TextStyle(color: Colors.blue[800])),
-                          subtitle: Text(filteredUsers[index]['email'],
-                              style: TextStyle(color: Colors.black)),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.edit, color: Colors.green),
-                                onPressed: () =>
-                                    showEditDialog(filteredUsers[index]),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
-                                onPressed: () =>
-                                    confirmDeleteDialog(filteredUsers[index]),
-                              ),
-                            ],
+                      String displayName = filteredUsers[index]['name'];
+                      String displayEmail = filteredUsers[index]['email'];
+                      if (displayName.length > 25) {
+                        displayName = displayName.substring(0, 25) + '...';
+                      }
+                      if (displayEmail.length > 30) {
+                        displayEmail = displayEmail.substring(0, 30) + '...';
+                      }
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width > 600
+                              ? 185
+                              : 50,
+                          right: MediaQuery.of(context).size.width > 600
+                              ? 185
+                              : 50,
+                        ),
+                        child: Card(
+                          color: Colors.white,
+                          child: ListTile(
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            title: Text(displayName,
+                                style: TextStyle(color: Colors.blue[800])),
+                            subtitle: Text(displayEmail,
+                                style: TextStyle(color: Colors.black)),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.edit, color: Colors.green),
+                                  onPressed: () =>
+                                      showEditDialog(filteredUsers[index]),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () =>
+                                      confirmDeleteDialog(filteredUsers[index]),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );

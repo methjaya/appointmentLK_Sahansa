@@ -1,3 +1,4 @@
+import 'package:AppointmentsbySahansa/screens/AppointmentScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Officer/OfficerHomeScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Officer/OfficerOnGoingScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,7 +21,7 @@ import 'package:AppointmentsbySahansa/screens/loginScreen.dart';
 import 'package:AppointmentsbySahansa/screens/welcomescreen.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // This must come first!
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return AdminHomeScreen(); //WelcomeScreen(); later chang eto WelcomeScreen
+              return NICScreen(); //WelcomeScreen(); later chang eto WelcomeScreen
             } else {
               return WelcomeScreen(); //LoginScreen();
             }

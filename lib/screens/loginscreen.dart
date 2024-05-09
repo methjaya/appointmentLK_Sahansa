@@ -1,6 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:AppointmentsbySahansa/screens/NICScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:AppointmentsbySahansa/main.dart';
 import 'package:AppointmentsbySahansa/screens/UserSelectionScreen.dart';
 
@@ -45,12 +46,14 @@ class _LoginScreenState extends State<LoginScreen> {
           .collection('users')
           .doc(userCredential.user!.uid)
           .set({
+        'email': _emailController.text.trim(), // Adding the email explicitly
         'firstName': _firstNameController.text.trim(),
         'lastName': _lastNameController.text.trim(),
         'nic': _nicController.text.trim(),
         'phone': _phoneController.text.trim(),
         'district': _selectedDistrict,
       });
+
       setState(() {
         isLoading = false;
       });
@@ -95,8 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width *
-        0.5; // Set width to 50% of screen width
+    double width = MediaQuery.of(context).size.width * 0.5;
 
     return Scaffold(
       body: Container(
@@ -115,7 +117,6 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  // const FlutterLogo(size: 100), // Optional logo
                   const SizedBox(height: 50),
                   Text(
                     isLogin ? "Welcome Back!" : "Register",
@@ -169,6 +170,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       isLogin
                           ? 'Need an account? Register'
                           : 'Have an account? Login',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (_) => UserSelectionScreen()),
+                      );
+                    },
+                    child: Text(
+                      'Go Back',
                       style: TextStyle(color: Colors.white70),
                     ),
                   ),
@@ -303,8 +317,8 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         isLoading = false;
       });
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => UserSelectionScreen())); //
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (_) => HomeScreen())); //
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login failed: ${e.toString()}')));

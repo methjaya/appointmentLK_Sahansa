@@ -1,3 +1,4 @@
+import 'package:AppointmentsbySahansa/screens/UserSelectionScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:AppointmentsbySahansa/screens/loginScreen.dart';
@@ -79,7 +80,8 @@ class WelcomeScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    CupertinoPageRoute(builder: (context) => LoginScreen()),
+                    CupertinoPageRoute(
+                        builder: (context) => UserSelectionScreen()),
                   );
                 },
               ),

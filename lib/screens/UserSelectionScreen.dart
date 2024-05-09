@@ -1,3 +1,7 @@
+import 'package:AppointmentsbySahansa/screens/OfficerLogin.dart';
+import 'package:AppointmentsbySahansa/screens/loginScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Adminlogin.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:AppointmentsbySahansa/homepage.dart';
 import 'package:AppointmentsbySahansa/main.dart';
@@ -59,17 +63,17 @@ class UserSelectionScreen extends StatelessWidget {
                 RoleCard(
                   role: "Citizen",
                   icon: Icons.people,
-                  navigationPage: HomeScreen(),
+                  navigationPage: LoginScreen(), //HomeScreen(),
                 ),
                 RoleCard(
                   role: "Officer",
                   icon: Icons.security,
-                  navigationPage: OfficerHomeScreen(),
+                  navigationPage: OfficerLogin(), //OfficerHomeScreen(),
                 ),
                 RoleCard(
                   role: "Admin",
                   icon: Icons.admin_panel_settings,
-                  navigationPage: AdminHomeScreen(),
+                  navigationPage: AdminLogin(), //AdminHomeScreen(),
                 ),
               ],
             ),
@@ -123,5 +127,157 @@ class RoleCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class LoginScreenAdmin extends StatefulWidget {
+  const LoginScreenAdmin({Key? key}) : super(key: key);
+
+  @override
+  _LoginScreenAdminState createState() => _LoginScreenAdminState();
+}
+
+class _LoginScreenAdminState extends State<LoginScreenAdmin> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width *
+        0.5; // Set width to 50% of screen width
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon:
+              Icon(Icons.arrow_back, color: Colors.white), // White back button
+          onPressed: () => Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => UserSelectionScreen())),
+        ),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [Colors.blue[300]!, Colors.blue[800]!],
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const SizedBox(height: 50),
+                  Text(
+                    "Welcome Back!",
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 30),
+                  buildTextField(_emailController, 'Email', Icons.email, width),
+                  const SizedBox(height: 20),
+                  buildTextField(
+                      _passwordController, 'Password', Icons.lock, width,
+                      isPassword: true),
+                  const SizedBox(height: 40),
+                  isLoading
+                      ? const CircularProgressIndicator()
+                      : buildButton('LOGIN', width),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildTextField(TextEditingController controller, String hintText,
+      IconData icon, double width,
+      {bool isPassword = false}) {
+    return Container(
+      width: width,
+      child: TextFormField(
+        controller: controller,
+        obscureText: isPassword,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
+          hintText: hintText,
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide.none),
+          prefixIcon: Icon(icon),
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return '$hintText cannot be empty';
+          }
+          if (hintText == 'Email' && !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+            return 'Enter a valid email';
+          }
+          if (hintText == 'Password' && value.length < 6) {
+            return 'Password must be at least 6 characters';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget buildButton(String text, double width) {
+    return Container(
+      width: width,
+      child: ElevatedButton(
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            _login();
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          foregroundColor: Colors.blue[800],
+          backgroundColor: Colors.white,
+          minimumSize: Size(width, 50),
+        ),
+        child:
+            Text(text, style: TextStyle(color: Colors.blue[800], fontSize: 16)),
+      ),
+    );
+  }
+
+  Future<void> _login() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => UserSelectionScreen()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: ${e.toString()}')));
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 }
