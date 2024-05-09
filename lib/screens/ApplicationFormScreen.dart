@@ -111,6 +111,27 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
       // Add data to Firestore
       users.add(formData).then((docRef) {
         print('Document successfully written with ID: ${docRef.id}');
+        // Show a popup dialog with the document ID
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: Colors.blue,
+              title: Text('Appointment Successfully Placed',
+                  style: TextStyle(color: Colors.white)),
+              content: Text('Document ID: ${docRef.id}',
+                  style: TextStyle(color: Colors.white)),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          },
+        );
       }).catchError((error) {
         print('Error adding document: $error');
       });
@@ -151,176 +172,192 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         title: const Text('Application Form',
             style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.blue,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextFormField(
-                  controller: _firstNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'First Name',
-                    hintText: 'Enter your first name',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your first name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _lastNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Last Name',
-                    hintText: 'Enter your last name',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your last name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _nicController,
-                  decoration: const InputDecoration(
-                    labelText: 'NIC',
-                    hintText: 'Enter your NIC Number',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty || value.length != 12) {
-                      return 'NIC should be exactly 12 characters';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () => _selectDateOfBirth(context),
-                  child: AbsorbPointer(
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Date of Birth',
-                        hintText: dateOfBirth == null
-                            ? 'Select your date of birth'
-                            : DateFormat('yyyy-MM-dd').format(dateOfBirth!),
-                        border: const OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (dateOfBirth == null) {
-                          return 'Please select your date of birth';
-                        }
-                        return null;
-                      },
+      body: Container(
+        color: const Color.fromARGB(255, 40, 123, 217),
+        child: Center(
+          child: FractionallySizedBox(
+            widthFactor: 0.8,
+            child: SingleChildScrollView(
+              child: Card(
+                margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextFormField(
+                          controller: _firstNameController,
+                          decoration: const InputDecoration(
+                            labelText: 'First Name',
+                            hintText: 'Enter your first name',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your first name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _lastNameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Last Name',
+                            hintText: 'Enter your last name',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your last name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _nicController,
+                          decoration: const InputDecoration(
+                            labelText: 'NIC',
+                            hintText: 'Enter your NIC Number',
+                          ),
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                value.length != 12) {
+                              return 'NIC should be exactly 12 characters';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: () => _selectDateOfBirth(context),
+                          child: AbsorbPointer(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                labelText: 'Date of Birth',
+                                hintText: dateOfBirth == null
+                                    ? 'Select your date of birth'
+                                    : DateFormat('yyyy-MM-dd')
+                                        .format(dateOfBirth!),
+                              ),
+                              validator: (value) {
+                                if (dateOfBirth == null) {
+                                  return 'Please select your date of birth';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        DropdownButtonFormField<String>(
+                          value: selectedProvince,
+                          hint: const Text('Select Province'),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedProvince = value;
+                            });
+                          },
+                          items: provinces
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Please select a province';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        DropdownButtonFormField<String>(
+                          value: selectedDistrict,
+                          hint: const Text('Select District'),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedDistrict = value;
+                            });
+                          },
+                          items: districts
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Please select a district';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _contactNumberController,
+                          decoration: const InputDecoration(
+                            labelText: 'Contact Number',
+                            hintText: 'Enter your contact number',
+                          ),
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                value.length != 10) {
+                              return 'Contact number should be exactly 10 digits';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
+                            hintText: 'Enter your email',
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                !value.contains('@')) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: submitToFirestore,
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.blue,
+                          ),
+                          child: const Text('Submit'),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  value: selectedProvince,
-                  hint: const Text('Select Province'),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedProvince = value;
-                    });
-                  },
-                  items:
-                      provinces.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select a province';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  value: selectedDistrict,
-                  hint: const Text('Select District'),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedDistrict = value;
-                    });
-                  },
-                  items:
-                      districts.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select a district';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _contactNumberController,
-                  decoration: const InputDecoration(
-                    labelText: 'Contact Number',
-                    hintText: 'Enter your contact number',
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value == null || value.isEmpty || value.length != 10) {
-                      return 'Contact number should be exactly 10 digits';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Enter your email',
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null ||
-                        value.isEmpty ||
-                        !value.contains('@')) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: submitToFirestore,
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue,
-                  ),
-                  child: const Text('Submit'),
-                ),
-              ],
+              ),
             ),
           ),
         ),

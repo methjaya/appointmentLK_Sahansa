@@ -1,3 +1,5 @@
+import 'package:AppointmentsbySahansa/homepage.dart';
+import 'package:AppointmentsbySahansa/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -51,10 +53,20 @@ class _NICScreenState extends State<NICScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Appointment for NIC',
-            style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Appointment for NIC',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color.fromARGB(255, 15, 110, 183),
-        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
+          },
+        ),
       ),
       body: Stack(
         fit: StackFit.expand,

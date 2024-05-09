@@ -76,21 +76,23 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Success',
-                  style: TextStyle(
-                      color: Colors.blue[800])), // Set title color to blue
-              content: Text('User created successfully',
-                  style: TextStyle(
-                      color: Colors.blue[800])), // Set content color to blue
+              title: Text(
+                'Success',
+                style: TextStyle(color: Colors.blue[800]),
+              ),
+              content: Text(
+                'User created successfully',
+                style: TextStyle(color: Colors.blue[800]),
+              ),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK',
-                      style: TextStyle(
-                          color: Colors
-                              .blue[800])), // Set button text color to blue
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: Colors.blue[800]),
+                  ),
                 ),
               ],
               backgroundColor: Colors.white, // Set background color to white
@@ -98,6 +100,47 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
           },
         );
       } catch (error) {
+        // Check for specific error message
+        String errorMessage = 'Failed to create user';
+        if (error is FirebaseAuthException) {
+          switch (error.code) {
+            case 'email-already-in-use':
+              errorMessage =
+                  'The email address is already in use by another account.';
+              break;
+            // Add more cases for other error codes if needed
+          }
+        }
+
+        // Show error message in a popup
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(
+                'Error',
+                style: TextStyle(color: Colors.red),
+              ),
+              content: Text(
+                errorMessage,
+                style: TextStyle(color: Colors.red),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+              backgroundColor: Colors.white, // Set background color to white
+            );
+          },
+        );
+
         print('Failed to create user: $error');
       }
     }

@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return NICScreen(); //WelcomeScreen(); later chang eto WelcomeScreen
+              return AdminHomeScreen(); //WelcomeScreen(); later chang eto WelcomeScreen
             } else {
               return WelcomeScreen(); //LoginScreen();
             }

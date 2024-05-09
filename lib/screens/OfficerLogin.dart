@@ -43,7 +43,7 @@ class _OfficerLoginState extends State<OfficerLogin> {
                 children: <Widget>[
                   const SizedBox(height: 50),
                   Text(
-                    "Admin Login",
+                    "Officer Login",
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,

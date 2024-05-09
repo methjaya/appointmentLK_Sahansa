@@ -60,6 +60,7 @@ class _OngoingScreenState extends State<OngoingScreen> {
       for (var doc in snapshot.docs) {
         var docData = doc.data() as Map<String, dynamic>;
         data.add({
+          'docId': doc.id, // Include document ID
           'selectedDate': docData['selectedDate'] ?? 'No date',
           'selectedTime': docData['selectedTime'] ?? 'No time',
           'title': docData['title'] ?? 'No title',
@@ -86,27 +87,45 @@ class _OngoingScreenState extends State<OngoingScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.white, // Optional: change as needed
-          title: Text("Cancel Appointment",
-              style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
-          content: Text("Are you sure you want to cancel this appointment?",
-              style: TextStyle(color: Colors.black)),
+          backgroundColor: Colors.white,
+          title: Text(
+            "Cancel Appointment",
+            style: TextStyle(color: Color.fromARGB(255, 15, 110, 183)),
+          ),
+          content: Text(
+            "Are you sure you want to cancel this appointment?",
+            style: TextStyle(color: Colors.black),
+          ),
           actions: <Widget>[
             TextButton(
-              child: Text("No",
-                  style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
+              child: Text(
+                "No",
+                style: TextStyle(color: Color.fromARGB(255, 15, 110, 183)),
+              ),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: Text("Yes",
-                  style: TextStyle(color: Color.fromARGB(255, 15, 110, 183))),
+              child: Text(
+                "Yes",
+                style: TextStyle(color: Color.fromARGB(255, 15, 110, 183)),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 dataFuture.then((List<Map<String, dynamic>> data) {
-                  setState(() {
-                    var updatedData = List<Map<String, dynamic>>.from(data);
-                    updatedData.removeAt(index);
-                    dataFuture = Future.value(updatedData);
+                  var appointment = data[index];
+                  FirebaseFirestore.instance
+                      .collection(
+                          getCollectionForAppointment(appointment['title']))
+                      .doc(appointment['docId'])
+                      .delete()
+                      .then((_) {
+                    setState(() {
+                      var updatedData = List<Map<String, dynamic>>.from(data);
+                      updatedData.removeAt(index);
+                      dataFuture = Future.value(updatedData);
+                    });
+                  }).catchError((error) {
+                    print("Failed to delete appointment: $error");
                   });
                 });
               },
@@ -115,6 +134,21 @@ class _OngoingScreenState extends State<OngoingScreen> {
         );
       },
     );
+  }
+
+  String getCollectionForAppointment(String title) {
+    switch (title) {
+      case 'APPOINTMENT FOR LICENSE':
+        return 'LicenseFormData';
+      case 'APPOINTMENT FOR PENSION':
+        return 'PensionFormData';
+      case 'APPOINTMENT FOR NIC':
+        return 'NICFormData';
+      case 'APPOINTMENT FOR PASSPORT':
+        return 'PassportFormData';
+      default:
+        throw Exception('Invalid appointment title');
+    }
   }
 
   @override

@@ -74,7 +74,10 @@ flutter:
     - assets/welcome.png
     - assets/welcomeWEB.png
     - assets/nic2.jpg
-
+    - assets/nic_blur.png
+    - assets/license_blur.png
+    - assets/pension_blur.png
+    - assets/passport_blur.png
 
 
   #  Appointment Lanka is a Project Created by Sahansa Jayawardhana (Hapuarachchige Jayawardhana 10818147 - PLY10)  

@@ -135,11 +135,11 @@ class _ProfileScreenState extends State {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _updateProfile,
-                child: Text('Update Profile'),
+                child: Text('Update Profile',
+                    style: TextStyle(color: Color.fromARGB(255, 17, 30, 147))),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
                   backgroundColor:
-                      const Color.fromARGB(255, 255, 255, 255), // Text color
+                      Color.fromARGB(255, 255, 255, 255), // Background color
                 ),
               ),
             ],
