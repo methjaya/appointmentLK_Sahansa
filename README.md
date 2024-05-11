@@ -5,11 +5,11 @@
 For Mobile Devices:
 •	As the finally developed product the deployment of the Mobile Application can be deployed as the iOS app and the Android app. After cloning the GitHub repository,
 
-```flutter pub get```)
+```flutter pub get```
 
 command should be executed in the terminal and if passes then,
 
-```flutter run```)
+```flutter run```
 
 command will deploy the mobile application.
 
