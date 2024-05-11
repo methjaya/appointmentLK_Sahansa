@@ -1,3 +1,4 @@
+import 'package:AppointmentsbySahansa/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -124,7 +125,10 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                    );
                   },
                   child: Text('OK', style: TextStyle(color: Colors.white)),
                 ),

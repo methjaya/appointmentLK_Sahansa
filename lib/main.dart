@@ -1,6 +1,8 @@
+import 'package:AppointmentsbySahansa/screens/Admin/AdminOnGoingScreen.dart';
 import 'package:AppointmentsbySahansa/screens/AppointmentScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Officer/OfficerHomeScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Officer/OfficerOnGoingScreen.dart';
+import 'package:AppointmentsbySahansa/screens/timeSelector.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -28,14 +30,6 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
-/*here I have replaced the beolow code with the above one cuz earlier it showed some rror in a runner file with missing POD.
-Future<void> main() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(MyApp());
-}
-*/
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -45,7 +39,7 @@ class MyApp extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return AdminHomeScreen(); //WelcomeScreen(); later chang eto WelcomeScreen
+              return AdminOngoingScreen(); //WelcomeScreen(); later chang eto WelcomeScreen
             } else {
               return WelcomeScreen(); //LoginScreen();
             }
@@ -173,7 +167,7 @@ class HeaderSection extends StatelessWidget {
                     context,
                     MaterialPageRoute(builder: (context) => OngoingScreen()),
                   );
-                  // Handle notification icon press here
+                  // Handle notification icon
                 },
               ),
             ),
@@ -247,7 +241,8 @@ class ServiceSection extends StatelessWidget {
           ServiceButton(
               label: 'NIC',
               icon: Icons.credit_card,
-              instructionScreen: NICInstructions()),
+              instructionScreen:
+                  NICInstructions()), //change back to NICInstructions()),
           ServiceButton(
               label: 'Passport',
               icon: Icons.book,

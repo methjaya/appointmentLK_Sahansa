@@ -26,10 +26,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   int? selectedIndex; // Track the index of the selected time slot
-  List<String> reservedTimeSlots = [];
-  List<String> availableTimeSlots = [
+  List<String> reservedTimeSlots = [
     '09:00 AM',
     '09:30 AM',
+  ];
+  List<String> availableTimeSlots = [
     '10:00 AM',
     '10:30 AM',
     '11:00 AM',
@@ -128,19 +129,27 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   ),
                   itemCount: availableTimeSlots.length,
                   itemBuilder: (context, index) {
+                    final isReserved =
+                        reservedTimeSlots.contains(availableTimeSlots[index]);
+                    final isActive = selectedIndex == index && !isReserved;
+
+                    print(
+                        'Slot ${availableTimeSlots[index]}: Reserved - $isReserved, Active - $isActive');
+
                     return InkWell(
                       onTap: () {
-                        _selectTime(index);
+                        if (!isReserved) _selectTime(index);
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: reservedTimeSlots
-                                  .contains(availableTimeSlots[index])
-                              ? Colors.grey // Inactive color
-                              : selectedIndex == index
-                                  ? Color.fromARGB(
-                                      255, 176, 221, 255) // Highlight color
-                                  : const Color.fromARGB(255, 255, 255, 255),
+                          color: isReserved
+                              ? Colors.grey.withOpacity(
+                                  0.5) // Faded color for reserved slots
+                              : isActive
+                                  ? Color.fromARGB(255, 176, 221,
+                                      255) // Highlight color for selected slot
+                                  : Colors
+                                      .white, // Active color for available slots
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
@@ -155,10 +164,14 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                           child: Text(
                             availableTimeSlots[index],
                             style: TextStyle(
-                              color: reservedTimeSlots
-                                      .contains(availableTimeSlots[index])
-                                  ? Colors.black
-                                  : Colors.blue,
+                              color: isReserved
+                                  ? Colors
+                                      .black // Inactive text color for reserved slots
+                                  : isActive
+                                      ? Colors
+                                          .white // Text color for selected slot
+                                      : Colors
+                                          .blue, // Text color for available slots
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                             ),

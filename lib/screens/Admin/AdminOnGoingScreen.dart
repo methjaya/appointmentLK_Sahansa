@@ -1,23 +1,7 @@
-import 'package:AppointmentsbySahansa/screens/Admin/AdminHomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:AppointmentsbySahansa/screens/Officer/OfficerHomeScreen.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'APPOINTMENT_APP',
-      home: AdminOngoingScreen(),
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-    );
-  }
-}
+import 'package:AppointmentsbySahansa/screens/Admin/AdminHomeScreen.dart';
 
 class AdminOngoingScreen extends StatefulWidget {
   @override
@@ -30,6 +14,7 @@ class _AdminOngoingScreenState extends State<AdminOngoingScreen> {
   List<Map<String, dynamic>> filteredAppointments = [];
   TextEditingController searchController = TextEditingController();
   String selectedFilter = 'NIC'; // Default filter is NIC
+  DateTime? _selectedDate;
 
   @override
   void initState() {
@@ -74,6 +59,7 @@ class _AdminOngoingScreenState extends State<AdminOngoingScreen> {
 
   void updateFilteredAppointments() {
     String query = searchController.text.toLowerCase();
+    print("Selected Date: $_selectedDate");
     setState(() {
       filteredAppointments = appointments.where((appointment) {
         bool matchesFilter =
@@ -81,16 +67,20 @@ class _AdminOngoingScreenState extends State<AdminOngoingScreen> {
         bool matchesSearch =
             appointment['title'].toString().toLowerCase().contains(query) ||
                 appointment['NIC'].toString().toLowerCase().contains(query);
-        return matchesFilter && matchesSearch;
+        bool matchesDate = _selectedDate == null ||
+            appointment['selectedDate'] ==
+                _selectedDate!.toString().split(' ')[0]; // Extract date part
+        print("Appointment Date: ${appointment['selectedDate']}");
+        return matchesFilter && matchesSearch && matchesDate;
       }).toList();
     });
   }
 
   void launchMapsUrl(String address) async {
-    var url = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
+    var url =
+        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}';
+    if (await canLaunch(url)) {
+      await launch(url);
     } else {
       throw 'Could not launch $url';
     }
@@ -123,6 +113,21 @@ class _AdminOngoingScreenState extends State<AdminOngoingScreen> {
     );
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+      updateFilteredAppointments();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,8 +137,12 @@ class _AdminOngoingScreenState extends State<AdminOngoingScreen> {
         backgroundColor: const Color.fromARGB(255, 15, 110, 183),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.push(context,
-              CupertinoPageRoute(builder: (context) => AdminHomeScreen())),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => AdminHomeScreen()),
+            );
+          },
         ),
       ),
       body: Container(
@@ -150,36 +159,22 @@ class _AdminOngoingScreenState extends State<AdminOngoingScreen> {
         ),
         child: Column(
           children: [
-            DropdownButtonHideUnderline(
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                margin: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width * 0.1),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.blue,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.calendar_today),
+                  onPressed: () => _selectDate(context),
                 ),
-                child: DropdownButton<String>(
-                  value: selectedFilter,
-                  isExpanded: true,
-                  icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-                  dropdownColor: Colors.blue,
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedFilter = newValue!;
-                    });
-                    updateFilteredAppointments();
-                  },
-                  items: <String>['NIC', 'Passport', 'License', 'Pension']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
+                Text(
+                  _selectedDate != null
+                      ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
+                      : 'Select Date',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
+              ],
             ),
             Padding(
               padding: EdgeInsets.symmetric(
