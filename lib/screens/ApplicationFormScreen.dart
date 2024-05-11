@@ -112,7 +112,8 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
       // Add data to Firestore
       users.add(formData).then((docRef) {
         print('Document successfully written with ID: ${docRef.id}');
-        // Show a popup dialog with the document ID
+
+// Show a popup dialog with the document ID and appointment summary
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -120,8 +121,69 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
               backgroundColor: Colors.blue,
               title: Text('Appointment Successfully Placed',
                   style: TextStyle(color: Colors.white)),
-              content: Text('Document ID: ${docRef.id}',
-                  style: TextStyle(color: Colors.white)),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Appointment ID:',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text('${docRef.id}', style: TextStyle(color: Colors.white)),
+                  SizedBox(height: 20),
+                  Text('Appointment Summary:',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 10), // Add line spacing here
+                  Text('Name: ${formData['firstName']} ${formData['lastName']}',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text('NIC: ${formData['nic']}',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text('Contact Number: ${formData['contactNumber']}',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text('Email: ${formData['email']}',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text('Date of Birth: ${formData['dateOfBirth'] ?? 'N/A'}',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text('Province: ${formData['province']}',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text('District: ${formData['district']}',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text('Selected District: ${formData['selectedDistrict']}',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text('Selected Location: ${formData['selectedLocation']}',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text('Selected Time: ${formData['selectedTime']}',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text('Selected Date: ${formData['selectedDate']}',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text('Title: ${formData['title']}',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                ],
+              ),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {

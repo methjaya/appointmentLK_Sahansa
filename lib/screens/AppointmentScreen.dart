@@ -26,11 +26,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   int? selectedIndex; // Track the index of the selected time slot
-  List<String> reservedTimeSlots = [
+  List<String> reservedTimeSlots = [];
+  List<String> availableTimeSlots = [
     '09:00 AM',
     '09:30 AM',
-  ];
-  List<String> availableTimeSlots = [
     '10:00 AM',
     '10:30 AM',
     '11:00 AM',
@@ -46,6 +45,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     '04:00 PM',
     '04:30 PM',
   ];
+  List<String> isSpecialReserved = [];
 
   @override
   void initState() {
@@ -133,62 +133,79 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         reservedTimeSlots.contains(availableTimeSlots[index]);
                     final isActive = selectedIndex == index && !isReserved;
 
-                    print(
-                        'Slot ${availableTimeSlots[index]}: Reserved - $isReserved, Active - $isActive');
-
-                    return InkWell(
-                      onTap: () {
-                        if (!isReserved) _selectTime(index);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: isReserved
-                              ? Colors.grey.withOpacity(
-                                  0.5) // Faded color for reserved slots
-                              : isActive
-                                  ? Color.fromARGB(255, 176, 221,
-                                      255) // Highlight color for selected slot
-                                  : Colors
-                                      .white, // Active color for available slots
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.5),
-                              spreadRadius: 1,
-                              blurRadius: 5,
-                              offset: Offset(0, 3),
+                    return isSpecialReserved.contains(availableTimeSlots[index])
+                        ? Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.5),
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                  offset: Offset(0, 3),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            availableTimeSlots[index],
-                            style: TextStyle(
-                              color: isReserved
-                                  ? Colors
-                                      .black // Inactive text color for reserved slots
-                                  : isActive
-                                      ? Colors
-                                          .white // Text color for selected slot
-                                      : Colors
-                                          .blue, // Text color for available slots
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                            child: Center(
+                              child: Text(
+                                availableTimeSlots[index],
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    );
+                          )
+                        : InkWell(
+                            onTap: () {
+                              if (!isReserved) _selectTime(index);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: isReserved
+                                    ? const Color.fromARGB(255, 51, 51, 51)
+                                        .withOpacity(0.5)
+                                    : isActive
+                                        ? Color.fromARGB(255, 176, 221, 255)
+                                        : Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    spreadRadius: 1,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  availableTimeSlots[index],
+                                  style: TextStyle(
+                                    color: isReserved
+                                        ? Colors.black
+                                        : isActive
+                                            ? Colors.white
+                                            : Colors.blue,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          );
                   },
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 5), // Increased top padding
+              padding: const EdgeInsets.only(top: 5),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .center, // Align button to center horizontally
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
                     onPressed: () {
@@ -223,12 +240,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Colors.blue, // header background color
-              onPrimary: Colors.white, // header text color
-              onSurface: Colors.black, // body text color
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
             ),
-            dialogBackgroundColor:
-                Colors.white, // background color of the dialog
+            dialogBackgroundColor: Colors.white,
           ),
           child: child!,
         );
@@ -237,26 +253,82 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       if (value != null) {
         setState(() {
           selectedDate = value;
-          _fetchReservedTimeSlots(
-              selectedDate); // Fetch reserved time slots for the selected date
+          _fetchReservedTimeSlots(selectedDate);
+
+          // Print selected date
+          print(
+              'Selected date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}');
         });
       }
     });
   }
 
   Future<void> _fetchReservedTimeSlots(DateTime selectedDate) async {
-    // Fetch reserved time slots from Firebase
     try {
+      // Print selected date from the app
+      print(
+          'Selected Date from the app: ${DateFormat('yyyy-MM-dd').format(selectedDate)}');
+
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('NICFormData')
           .where('selectedDate', isEqualTo: selectedDate)
+          .where('selectedLocation', isEqualTo: widget.selectedLocation)
           .get();
 
+      bool existingAppointments = querySnapshot.docs.isNotEmpty;
+
+      if (existingAppointments) {
+        // Print existing appointments' dates from Firebase
+        List<DateTime> existingDates = [];
+        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+          Timestamp? timestamp = doc['selectedDate'] as Timestamp?;
+          if (timestamp != null) {
+            DateTime date = timestamp.toDate();
+            existingDates.add(date);
+          }
+        }
+        print('Existing Appointments Dates from Firebase: $existingDates');
+      }
+
+      if (!existingAppointments) {
+        // If no appointments found with the specific date and location,
+        // iterate through all documents in the collection
+        QuerySnapshot allDocsSnapshot =
+            await FirebaseFirestore.instance.collection('NICFormData').get();
+
+        for (QueryDocumentSnapshot doc in allDocsSnapshot.docs) {
+          dynamic selectedDateField = doc['selectedDate'];
+
+          // Check if selectedDateField is a Timestamp
+          if (selectedDateField is Timestamp) {
+            DateTime date = selectedDateField.toDate();
+            // Compare dates without considering the time component
+            if (date.year == selectedDate.year &&
+                date.month == selectedDate.month &&
+                date.day == selectedDate.day &&
+                doc['selectedLocation'] == widget.selectedLocation) {
+              existingAppointments = true;
+              break;
+            }
+          } else if (selectedDateField is String) {
+            // Convert String to DateTime
+            DateTime date = DateTime.parse(selectedDateField);
+            // Compare dates without considering the time component
+            if (date.year == selectedDate.year &&
+                date.month == selectedDate.month &&
+                date.day == selectedDate.day &&
+                doc['selectedLocation'] == widget.selectedLocation) {
+              existingAppointments = true;
+              break;
+            }
+          }
+        }
+      }
+
       setState(() {
-        reservedTimeSlots.clear();
-        reservedTimeSlots.addAll(querySnapshot.docs
-            .map((doc) => doc['selectedTime'].toString())
-            .toList());
+        // Update UI based on reserved time slots
+        selectedIndex = null;
+        print('Existing Appointments: $existingAppointments');
       });
     } catch (e) {
       print('Error fetching reserved time slots: $e');
@@ -271,7 +343,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           minute:
               int.parse(availableTimeSlots[index].split(':')[1].split(' ')[0]),
         );
-        selectedIndex = index; // Update the selected index
+        selectedIndex = index;
       });
     }
   }
