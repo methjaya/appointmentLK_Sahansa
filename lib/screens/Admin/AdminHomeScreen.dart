@@ -1,6 +1,7 @@
 import 'package:AppointmentsbySahansa/screens/Admin/AdminCreateOfficer.dart';
 import 'package:AppointmentsbySahansa/screens/Admin/AdminNICScreen.dart';
 import 'package:AppointmentsbySahansa/screens/Admin/AdminOnGoingScreen.dart';
+import 'package:AppointmentsbySahansa/screens/Admin/AdminOnGoingScreen2.dart';
 import 'package:AppointmentsbySahansa/screens/Admin/ReviewOfficerUserScreen.dart';
 import 'package:AppointmentsbySahansa/screens/ProfileScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -243,7 +244,7 @@ class HeaderSection extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AdminOngoingScreen(),
+                        builder: (context) => AdminOnGoingScreen2(),
                       ));
                   // Handle notification icon press here
                 },

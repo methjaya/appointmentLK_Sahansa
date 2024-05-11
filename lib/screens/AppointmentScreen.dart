@@ -132,8 +132,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     final isReserved =
                         reservedTimeSlots.contains(availableTimeSlots[index]);
                     final isActive = selectedIndex == index && !isReserved;
+                    final isSpecialReserved =
+                        availableTimeSlots[index] == '11:30 AM' ||
+                            availableTimeSlots[index] == '01:00 PM';
 
-                    return isSpecialReserved.contains(availableTimeSlots[index])
+                    return isSpecialReserved
                         ? Container(
                             decoration: BoxDecoration(
                               color: Colors.grey.withOpacity(0.5),
@@ -166,7 +169,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                             child: Container(
                               decoration: BoxDecoration(
                                 color: isReserved
-                                    ? const Color.fromARGB(255, 51, 51, 51)
+                                    ? Color.fromARGB(255, 0, 0, 0)
                                         .withOpacity(0.5)
                                     : isActive
                                         ? Color.fromARGB(255, 176, 221, 255)
