@@ -265,10 +265,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
   Future<void> _fetchReservedTimeSlots(DateTime selectedDate) async {
     try {
-      // Print selected date from the app
-      print(
-          'Selected Date from the app: ${DateFormat('yyyy-MM-dd').format(selectedDate)}');
-
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('NICFormData')
           .where('selectedDate', isEqualTo: selectedDate)
@@ -278,16 +274,14 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       bool existingAppointments = querySnapshot.docs.isNotEmpty;
 
       if (existingAppointments) {
-        // Print existing appointments' dates from Firebase
-        List<DateTime> existingDates = [];
+        // Print existing appointments' reserved time slots from Firebase
+        List<String> reservedTimeSlots = [];
         for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-          Timestamp? timestamp = doc['selectedDate'] as Timestamp?;
-          if (timestamp != null) {
-            DateTime date = timestamp.toDate();
-            existingDates.add(date);
-          }
+          String reservedTime =
+              doc['selectedTime']; // Assuming the field name is 'selectedTime'
+          reservedTimeSlots.add(reservedTime);
         }
-        print('Existing Appointments Dates from Firebase: $existingDates');
+        print('Reserved Time Slots from Firebase: $reservedTimeSlots');
       }
 
       if (!existingAppointments) {
